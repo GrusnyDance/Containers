@@ -1,5 +1,6 @@
 #include <iostream>
 
+// принимает пару
 template <typename Data>
 class TreeNode {
  public:
@@ -62,7 +63,7 @@ class TreeNode {
       while (temp->right_) temp = temp->right_;
     } else if (temp->parent_) {
       // если значение крайнее левое в правой ветке
-      while (temp->parent_ && temp->parent->left_ = temp) {
+      while (temp->parent_&& temp->parent->left_ = temp) {
         temp = temp->parent_;
       }
       temp = temp->parent_;
@@ -70,5 +71,9 @@ class TreeNode {
   }
 };
 
-template <typename Т>
-class S21Tree {};
+// принимает пару, определяет как сравниваются ноды?? посмотреть как работает
+// less который вызывается в оригинале
+template <typename K, typename Comparator = Compare<K>, bool isConst>
+class TreeIterator {
+  // дружественный класс ноды
+};
