@@ -9,7 +9,7 @@ int main() {
   test[10] = "lalala";
   test[3] = "am testing map";
 
-  for (auto x = test.begin(); x != test.end(); ++x) {
-    cout << x->first << endl;
-  }
+//   for (auto x = test.begin(); x != test.end(); ++x) {
+//     cout << x->first << endl;
+//   }
 }

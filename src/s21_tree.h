@@ -73,7 +73,50 @@ class TreeNode {
 
 // принимает пару, определяет как сравниваются ноды?? посмотреть как работает
 // less который вызывается в оригинале
-template <typename K, typename Comparator = Compare<K>, bool isConst>
+template <typename Data, bool isConst = 0>
 class TreeIterator {
+ public:
+  using iterator_category = std::bidirectional_iterator_tag;
+  using node_pointer = TreeNode<Data>*;
+  using value_type = Data;
   // дружественный класс ноды
+  friend class TreeNode<Data>;
+  node_pointer ptr_;
+
+  TreeIterator(){ptr_ = nullptr};
+  TreeIterator(node_pointer ptr){ptr_ = ptr};
+  TreeIterator(const TreeIterator& other) : { *this = other; }
+  ~TreeIterator() {}
+
+  TreeIterator& operator=(const TreeIterator& other) {
+    ptr_ = other.ptr_;
+    return *this;
+  }
+
+  TreeIterator operator++(int) {
+    TreeIterator before(*this);
+    ++(*this);
+    return before;
+  }
+
+  TreeIterator operator--(int) {
+    TreeIterator before(*this);
+    --(*this);
+    return before;
+  }
+
+  TreeIterator& operator++() {
+    ptr_ = ptr_->next();
+    return *this;
+  }
+
+  TreeIterator& operator--() {
+    ptr_ = ptr_->prev();
+    return *this;
+  }
+
+  node_pointer operator->() { return (ptr_); }  // какая то хуйня, мб убрать
+  value_type operator*() { return (ptr_->data_); }
+  bool operator==(const TreeIterator& other) { return (ptr_ == other.ptr_); }
+  bool operator!=(const TreeIterator& other) { return (ptr_ != other.ptr_); }
 };
