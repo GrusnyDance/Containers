@@ -151,11 +151,13 @@ class Tree {
 
     iterator end() {
       iterator it(last_);
+      it++;
       return it;
     }
 
     iterator end() const {
       iterator it(last_);
+      it++;
       return it;
     }
 
