@@ -4,6 +4,8 @@
 #include <iostream>
 #include <initializer_list>
 
+#include "s21_sort.h"
+
 namespace s21 {
 
 template <class T>
@@ -14,6 +16,7 @@ class ListIterator;
 
 template <class T>
 struct Node {
+    // friend class ListIterator<T>;
     T value;
     Node *prev = nullptr;
     Node *next = nullptr;
@@ -48,6 +51,12 @@ struct Node {
         delete this;
         return ret;
     }
+    // void swap(Node<T> other) {
+    //     node *S = new Node;
+    //     next = S;
+    //     next = other.next;
+    //     other.next = S;
+    // }
 };
 
 template <class T>
@@ -303,11 +312,10 @@ class list {
         void reverse() {
             node *this_ = head;
             swapNode(&head, &root);
-            do {
+            for (int k = 0; k < (int)size_; k++) {
                 swapNode(&this_->next, &this_->prev);
                 this_ = this_->prev;
-            } while (this_ != fake);
-
+            }
         }
         void unique() {
             node *this_ = head;
@@ -324,7 +332,11 @@ class list {
                 }
             }
         }
-        void sort();
+        void sort() {
+            iterator start(head);
+            iterator end(root);
+            QSort<iterator, T>(start, end, (int)size_);
+        }
 
     protected:
 
