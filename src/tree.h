@@ -131,9 +131,12 @@ class Tree {
     }
 
     iterator find(const key_type &key) {
-      iterator it(search(key));
-      // code...
-      return it;
+      if (search(key) != nullptr) {
+        iterator it(search(key));
+        return it;
+      } else {
+        return nullptr;
+      }
     }
     
     iterator begin() {
@@ -159,11 +162,12 @@ class Tree {
     bool erase(const key_type key) {
       bool result = false;
       if (root_ == nullptr || search(key) == nullptr) {
-        result = false;
+        return false;
       } else {
         removeRecurs(this->root_, key);
         size_--;
-        result = true;
+        // result = true;
+        return true;
       }
       minimum(root_);
       maximum(root_);
@@ -202,18 +206,26 @@ class Tree {
     }
 
     size_type max_size() const {
-      return std::numeric_limits<value_type>::max();
+      std::allocator<key_type> alloc;
+      return alloc.max_size() / 10;
     }
 
     void printSorted(node root) {
       if (root != nullptr) {
         printSorted(root->left_);
-        std::cout << root->data_ << std::endl;
+        std::cout << root->data_  << " ";
         printSorted(root->right_);
       }
     }
 
+  // help func
+  private:
+
     node minimum(node root) {
+      if (root == nullptr) {
+        return root;
+        
+      }
       if (root->left_ == nullptr) {
         first_ = root;
         return root;
@@ -222,16 +234,15 @@ class Tree {
     }
 
     node maximum(node root) {
+      if (root == nullptr) {
+        return root;
+      }
       if (root->right_ == nullptr) {
         last_ = root;
         return root;
       }
       return maximum(root->right_);
     }
-  
-
-  // help func
-  private:
 
     bool pasteNode(key_type key) {
       bool result = false;
