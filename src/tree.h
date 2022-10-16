@@ -1,7 +1,7 @@
 // maiamabl
 /* dodelatb 
 find()
-eraze() or remove() sega kogda odin key */
+end()*/
 
 #ifndef __SRC_BTREE_H__
 #define __SRC_BTREE_H__
@@ -17,20 +17,14 @@ eraze() or remove() sega kogda odin key */
 
 namespace s21 {
 
-enum eColor {
-  RED,
-  BLACK
-};
-
 template<class Key>
 struct STree {
   Key data_;
-  eColor color_;
   STree<Key> *parent_;
   STree<Key> *left_;
   STree<Key> *right_;
   STree()
-    : color_(BLACK), parent_(nullptr), left_(nullptr), right_(nullptr) {}
+    : parent_(nullptr), left_(nullptr), right_(nullptr) {}
 };
 
 template<class K, bool MULTI>
@@ -57,33 +51,26 @@ class Tree {
   
   public:
 
-    Tree() {
-      this->first_ = nullptr;
-      this->root_ = nullptr;
-      this->last_ = nullptr;
-      this->size_ = 0;
-      this->comp_ = Compare();
+    Tree() : first_(nullptr), root_(nullptr), last_(nullptr),
+        size_(0), comp_(Compare()) {
     }
 
-    Tree(std::initializer_list<key_type> const &keys) {
+    Tree(std::initializer_list<key_type> const &keys) : first_(nullptr),
+        root_(nullptr), last_(nullptr), size_(0), comp_(Compare()) {
       operator=(keys);
     }
 
-    Tree(const Tree &other) {
-      this->first_ = other.first_;
-      this->last_ = other.last_;
-      this->root_ = other.root_;
-      this->size_ = other.size_;
+    Tree(const Tree &other) : first_(other.first_), last_(nullptr),
+        root_(other.root_), size_(other.size_) {
     }
 
-    Tree(Tree&& other)
-      : root_(other.root_), first_(other.first_), size_(other.size_) {
-      last_ = nullptr;
+    Tree(Tree&& other) : root_(other.root_), first_(other.first_),
+        size_(other.size_), last_(nullptr) {
       other.root_ = nullptr;
       other.front_ = nullptr;
       other.size_ = 0;
     }
-        
+
     ~Tree() {}
 
     Tree& operator=(std::initializer_list<value_type> const& keys) {
@@ -95,17 +82,32 @@ class Tree {
       for (auto i : keys) {
         this->pasteNode(i);
       }
-      minimum(root_);
       maximum(root_);
       return *this;
     }
     
     void operator=(const Tree &other) {
       this->first_ = other.first_;
-      this->last_ = other.last_;
+      this->last_ = nullptr;
       this->root_ = other.root_;
       this->size_ = other.size_;
-      // return *this;
+    }
+
+    Tree& operator=(Tree&& other) {
+      if (root_ == other.root_) {
+        return *this;
+      }
+      if (root_ != nullptr) {
+        this->clear();
+      }
+      root_ = other.root_;
+      first_ = other.first_;
+      size_ = other.size_;
+      last_ = nullptr;
+      other.root_ = nullptr;
+      other.first_ = nullptr;
+      other.size_ = 0;
+      return *this;
     }
 
     node getFirst() { return first_; }
@@ -118,24 +120,13 @@ class Tree {
       root_ = first_ = last_ = nullptr;
     }
 
-    std::pair<iterator, bool> insert(const value_type &value) {
-      std::pair<iterator, bool> result;
-      if (pasteNode(value)) {
-        result = std::pair<iterator, bool>(find(value), true);
-      } else {
-        result = std::pair<iterator, bool>(find(value), false);
-      }
-      minimum(root_);
-      maximum(root_);
-      return result;
-    }
-
     iterator find(const key_type &key) {
       if (search(key) != nullptr) {
         iterator it(search(key));
         return it;
       } else {
-        return nullptr;
+        // povedenie neopredeleno (sega)
+        return end();
       }
     }
     
@@ -150,14 +141,14 @@ class Tree {
     }
 
     iterator end() {
+      // obrashenie = (sega)
       iterator it(last_);
-      it++;
       return it;
     }
 
     iterator end() const {
+      // obrashenie = (sega)
       iterator it(last_);
-      it++;
       return it;
     }
 
@@ -168,11 +159,10 @@ class Tree {
       } else {
         removeRecurs(this->root_, key);
         size_--;
-        // result = true;
+        minimum(root_);
+        maximum(root_);
         return true;
       }
-      minimum(root_);
-      maximum(root_);
       return result;
     }
 
@@ -185,18 +175,10 @@ class Tree {
     void merge(node& other) {
       iterator it = other.begin();
       while (it != other.end()) {
-        this->insert(*it);
+        this->pasteNode(other->data_);
         it++;
       }
       other.clear();
-    }
-
-    bool contains(const key_type& key) {
-      int res = 0;
-      if (search(key)) {
-        res = 1;
-      }
-      return res;
     }
 
     bool empty() const {
@@ -221,7 +203,7 @@ class Tree {
     }
 
   // help func
-  private:
+  protected:
 
     node minimum(node root) {
       if (root == nullptr) {
@@ -240,7 +222,6 @@ class Tree {
         return root;
       }
       if (root->right_ == nullptr) {
-        last_ = root;
         return root;
       }
       return maximum(root->right_);
@@ -252,7 +233,7 @@ class Tree {
         if (search(key) == nullptr) {
           initNewNode(key);
           size_++;
-          result = true;
+          return true;
         }
       } else {
         initNewNode(key);
@@ -264,7 +245,6 @@ class Tree {
 
     void initNewNode(key_type key) {
       node tmp = new STree<key_type>;
-      tmp->color_ = RED;
       tmp->data_ = key;
       tmp->parent_ = nullptr;
       tmp->left_ = nullptr;
@@ -301,9 +281,11 @@ class Tree {
     }
 
     node searchRecurs(node root, value_type key) const {
-      node result = root;
-      if (root == nullptr || root->data_ == key) {
-        return result;
+      if (root == nullptr) {
+        return nullptr;
+      }
+      if (root->data_ == key) {
+        return root;
       }
       if (comp_(root->data_, key)) {
         return searchRecurs(root->right_, key);

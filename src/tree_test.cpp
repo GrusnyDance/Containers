@@ -1,6 +1,6 @@
 // maiamabl
 #include <gtest/gtest.h>
-#include "tree.h"
+#include "s21_set.h"
 
 using namespace s21;
 
@@ -12,7 +12,7 @@ void print_set(std::set<int> set) {
 }
 
 int main() {
-    Tree<int, false> abc;
+    set<int> abc;
     std::set<int> sabc;
 
     std::cout << "Func Empty() begin" << std::endl;
@@ -20,11 +20,7 @@ int main() {
     std::cout << "ORIGINAL = " << sabc.empty() << std::endl;
     std::cout << std::endl;
 
-    // for (int i = 0; i < 15; i++) {
-    //     abc.insert(rand() % 50, s21::F_DU);
-    // }
-
-    // abc.insert(55);
+    // abc.insert(556);
     // abc.insert(3);
     // abc.insert(76);
     // abc.insert(22);
@@ -51,24 +47,24 @@ int main() {
     std::cout << "ORIGINAL = " << sabc.empty() << std::endl;
     std::cout << std::endl;
 
-    std::cout << "Func Search(39) true" << std::endl;
+    std::cout << "Func Find(39) true" << std::endl;
     std::cout << abc.find(39).operator*() << std::endl;
     std::cout << sabc.find(39).operator*() << std::endl;
     std::cout << std::endl;
 
-    std::cout << "Func Search(111) false" << std::endl;
-    // std::cout << abc.find(111). << std::endl;
-    // std::cout << sabc.find(111) << std::endl;
+    std::cout << "Func Find(111) false" << std::endl;
+    // std::cout << abc.find(111).operator*() << std::endl;
+    std::cout << sabc.find(111).operator*() << std::endl;
     std::cout << std::endl;
 
-    std::cout << "Func Erase(55) root" << std::endl;
-    std::cout << abc.erase(55) << std::endl;
-    std::cout << sabc.erase(55) << std::endl;
-    abc.printSorted(abc.getRoot());
-    std::cout << std::endl;
-    print_set(sabc);
-    std::cout << std::endl;
-    std::cout << std::endl;
+    // std::cout << "Func Erase(55) root" << std::endl;
+    // std::cout << abc.erase(55) << std::endl;
+    // std::cout << sabc.erase(55) << std::endl;
+    // abc.printSorted(abc.getRoot());
+    // std::cout << std::endl;
+    // print_set(sabc);
+    // std::cout << std::endl;
+    // std::cout << std::endl;
 
     std::cout << "Func Erase(97) max" << std::endl;
     std::cout << abc.erase(97) << std::endl;
@@ -109,12 +105,15 @@ int main() {
 
     std::cout << "Func Begin() and End()" << std::endl;
     std::cout << "___MY__B = " << abc.begin().operator*() << std::endl;
-    std::cout << "___MY__E = " << abc.end().operator*() << std::endl;
+    std::cout << "ORIGINAL = " << sabc.begin().operator*() << std::endl;
+    // std::cout << "___MY__E = " << abc.end() << std::endl;
+    // std::cout << "___MY__E = " << sabc.end() << std::endl;
     std::cout << std::endl;
 
     std::cout << "Func Operator++() and Operator--()" << std::endl;
     std::cout << "___MY__B = " << abc.begin().operator++().operator*() << std::endl;
-    std::cout << "___MY__E = " << abc.end().operator--().operator*() << std::endl;
+    std::cout << "ORIGINAL = " << sabc.begin().operator++().operator*() << std::endl;
+    std::cout << "ORIGINAL = " << sabc.end().operator--().operator*() << std::endl;
 
     std::cout << std::endl;
 
