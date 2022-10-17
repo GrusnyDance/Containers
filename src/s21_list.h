@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <initializer_list>
+#include <limits>
 
 #include "s21_sort.h"
 
@@ -51,12 +52,6 @@ struct Node {
         delete this;
         return ret;
     }
-    // void swap(Node<T> other) {
-    //     node *S = new Node;
-    //     next = S;
-    //     next = other.next;
-    //     other.next = S;
-    // }
 };
 
 template <class T>
@@ -122,6 +117,7 @@ class ListConstIterator {
             ptr = other.ptr;
             return this;
         }
+
 };
 
 template <class T>
@@ -155,15 +151,15 @@ class list {
             *b = buff;
         }
     public:
-        list() {
+        list() : size_(0) {
             fakeAllocate();
         }
-        list(size_type n) {
+        list(size_type n) : size_(n) {
             fakeAllocate();
             node *prev_ = fake;
             for (int k = 0; k < n; k++) {
                 node *add = new node;
-                if (prev_ != fake) prev_->next = add;
+                prev_->next = add;
                 add->prev = prev_;
                 prev_ = add;
                 if (k == 0) head = add;
@@ -172,26 +168,22 @@ class list {
                     root->next = fake;
                 }
             }
-            size_ = n;
         }
         list(std::initializer_list<value_type> const &items) {
             fakeAllocate();
+            for (const auto &add : items) push_back(add);
+            head = fake->next;
+            root = fake->prev;
         }
-        list(const list<value_type> &l) {
-            size_ = l.size_;
+        list(const list<value_type> &l) : size_(l.size_) {
             fakeAllocate();
             node *copy = l.head;
             node *prev_ = fake;
             for (size_type k = 0; k < size_; k++) {
-                node *add = new node;
-                if (prev_ != fake) prev_->next = add;
-                add->prev = prev_;
-                if (k == 0) head == add;
-                if (k == size_ - 1) {
-                    root = add;
-                    root->next = fake;
-                }
-                add->value = copy->value;
+                node *add = prev_->addNext(copy->value);
+                if (k == 0) head = add;
+                if (k == size_ - 1) root = add;
+                prev_ = add;
                 copy = copy->next;
             }
         }
@@ -208,6 +200,33 @@ class list {
         }
         list &operator=(list<value_type> &&l) { 
             this = *l;
+        }
+        list &operator=(const list<value_type> &l) { 
+            size_ = l.size_;
+            fakeAllocate();
+            node *copy = l.head;
+            node *prev_ = fake;
+            for (size_type k = 0; k < size_; k++) {
+                node *add = prev_->addNext(copy->value);
+                if (k == 0) head = add;
+                if (k == size_ - 1) root = add;
+                prev_ = add;
+                copy = copy->next;
+            }
+            return *this;
+        }
+        bool operator==(list<value_type> other) const {
+            if (size_ == other.size_) {
+                node *Tcheck = head;
+                node *Ocheck = other.head;
+                while (Tcheck != fake) {
+                    if (Tcheck->value != Ocheck->value) return false;
+                    Tcheck = Tcheck->next;
+                    Ocheck = Ocheck->next;
+                }
+                return true;
+            }
+            return false;
         }
         const_reference front() {
             return head->value;
@@ -230,7 +249,9 @@ class list {
         size_type size() {
             return size_;
         }
-        size_type max_size();  //  --------------------------------------------------------------- ???
+        size_type max_size() {
+            return (std::numeric_limits<size_type>::max() / sizeof(node) / 2);  // include <limits>
+        }
         void clear() {
             node *del = head;
             for (size_type k = 0; k < size_; k++) {
@@ -249,11 +270,15 @@ class list {
             pos--;
             return pos;
         }
-        void erase(iterator pos) {
+        iterator erase(iterator pos) {
+            if (pos.ptr == head) head = pos.ptr->next;
+            if (pos.ptr == root) root = pos.ptr->prev;
             pos.ptr->next->prev = pos.ptr->prev;
             pos.ptr->prev->next = pos.ptr->next;
+            iterator ret = pos.ptr->next;
             delete pos.ptr;
             size_--;
+            return ret;
         }
         void push_back(const_reference value) {
             root = fake->addPrev(value);
@@ -298,7 +323,7 @@ class list {
             size_ += other.size_;
             other.size_ = 0;
         }
-        void splice(const_iterator pos, list& other) {
+        void splice(const_iterator pos, list& other) {  // head && root ???
             pos.ptr->prev->next = other.head;
             other.head->prev = pos.ptr->prev;
             pos.ptr->prev = other.root;
@@ -312,7 +337,7 @@ class list {
         void reverse() {
             node *this_ = head;
             swapNode(&head, &root);
-            for (int k = 0; k < (int)size_; k++) {
+            for (int k = 0; k <= (int)size_; k++) {
                 swapNode(&this_->next, &this_->prev);
                 this_ = this_->prev;
             }
@@ -325,7 +350,7 @@ class list {
                 while (S == this_->value && this_ != fake) {
                     this_ = this_->pop();
                     size_--;
-                    if (this_ = fake) {
+                    if (this_ == fake) {
                         root = this_->prev;
                         break;
                     }
@@ -335,7 +360,7 @@ class list {
         void sort() {
             iterator start(head);
             iterator end(root);
-            QSort<iterator, T>(start, end, (int)size_);
+            QSort<iterator, value_type>(start, end);
         }
 
     protected:

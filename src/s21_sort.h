@@ -1,41 +1,39 @@
 #ifndef _SRC_S21_SORT_H_
 #define _SRC_S21_SORT_H_
 
-template <class T, class type>
-void swap(T a, T b) {
+template <class iterator, class type>
+void swap(iterator a, iterator b) {
     type S = *a;
     *a = *b;
     *b = S;
 }
 
-template <class T, class type>
-T partToSort(T start, T end, int *size) {
-    T start_ = start;
-    T point = start;
-    int k = *size;
-    while (k > 0) {
-        if (*start_ < *end) {
-            swap<T, type>(start_, point);
+template <class iterator, class type>
+iterator partToSort(iterator start, iterator end) {
+    iterator point = start;
+    while (start != end) {
+        if (*start < *end) {
+            swap<iterator, type>(start, point);
             point++;
-            *size -= 1;
         }
-        start_++;
-        k--;
+        start++;
     }
-    swap<T, type>(point, end);
+    swap<iterator, type>(point, end);
     return point;
 }
 
-template <class T, class type>
-void QSort(T start, T end, int size) {
-    if (size <= 1) return;
-    int R = size;
-    T next = partToSort<T, type>(start, end, &R);
-    T prev = next;
-    next++;
-    prev--;
-    QSort<T, type>(start, prev, size - R);
-    QSort<T, type>(next, end, R - 1);
+template <class iterator, class type>
+void QSort(iterator start, iterator end) {
+    // if (start == end) return;
+    iterator next = partToSort<iterator, type>(start, end), prev = next;
+    if (start != prev) {
+        prev--;
+        QSort<iterator, type>(start, prev);
+    }
+    if (next != end) {
+        next++;
+        QSort<iterator, type>(next, end);
+    }
 }
 
 #endif // _SRC_S21_SORT_H_
