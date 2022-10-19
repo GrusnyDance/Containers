@@ -76,6 +76,7 @@ class vector {
         }
     }
 
+    // Не работает
     vector(vector &&v) : size_(v.size_), alloc_size_(v.alloc_size_) {
         first_ = v.first_;
         v.first_ = nullptr;
@@ -92,11 +93,12 @@ class vector {
     vector& operator=(vector &&v);
     vector& operator=(const vector& other); // Пока не знаю как и зачем это нужно
 
-
-
-
     // Methods for acces of elements
-    reference at(size_type pos);  // access specified element with bounds checking
+
+    // access specified element with bounds checking
+    reference at(size_type pos) {
+        return *(first_ + pos);
+    }
 
     // access specified element
     reference operator[](size_type pos) {
@@ -110,11 +112,7 @@ class vector {
     const_reference back() { return *(first_ + size_ - 1) ;}
 
     // direct access to the underlying array
-    T* data();
-
-
-
-
+    T* data() { return first_; }
 
     // Iterators
     iterator begin() { return iterator(first_); }
@@ -122,25 +120,35 @@ class vector {
     const_iterator begin() const { return const_iterator(first_); }
     const_iterator end() const { return const_iterator(first_ + size_); }
 
-
-
-
-
     // Methods for capacity
     
     // checks whether the container is empty
-    bool empty();
+    [[nodiscard]] bool empty() {
+        if (size_ == 0) {
+        return true;
+        }
+        return false;
+    }
     
     // returns the number of elements
-    size_type size() {
+    [[nodiscard]] size_type size() {
         return size_;
     }
 
     // returns the maximum possible number of elements
-    size_type max_size();
+    [[nodiscard]] size_type max_size();
 
     // allocate storage of size elements and copies current array elements to a newely allocated array
-    void reserve(size_type size);
+    void reserve(size_type size) {
+        if (size_ > alloc_size_) {
+            size_type copyHelper = alloc_size_;
+            alloc_size_ = size;
+            T* tmp = new T[alloc_size_];
+            std::copy(first_, first_ + copyHelper, tmp);
+            delete[] first_;
+            first_ = tmp;
+        }
+    }
      
     // returns the number of elements that can be held in currently allocated storage
     size_type capacity() {
@@ -148,18 +156,57 @@ class vector {
     }
 
     // reduces memory usage by freeing unused memory
-    void shrink_to_fit();
-
-
-
+    void shrink_to_fit(size_type newSize) {
+        if (newSize < size_) {
+            T* tmp = new T[newSize];
+            std::memmove(tmp, first_, size_ * sizeof(T));
+            delete[] first_;
+            first_ = tmp;
+            size_ = newSize;
+        }
+    }
 
     // Methods for changing container
-    void clear(); // clears the contents
-    iterator insert(iterator pos, const_reference value); // inserts elements into concrete pos and returns the iterator that points to the new element
-    void erase(iterator pos); // erases element at pos
-    void push_back(const_reference value); // adds an element to the end
-    void pop_back(); // removes the last element
-    void swap(vector& other); // swaps the contents
+    
+    // clears the contents
+    void clear() {
+        this->~vector();
+    }
+
+    // inserts elements into concrete pos and returns the iterator that points to the new element
+    iterator insert(iterator pos, const_reference value) {
+        size_++;
+        if (first_ == nullptr) {
+            alloc_size_ = 1;
+            first_ = new value_type[value];
+            first_ = *value;
+            return iterator(pos);
+        }
+
+        if (size_ <= alloc_size_) {
+            // std::memmove(pos.ptr_ + 1, pos.ptr_,
+            //     (size_ - 1) * sizeof(T) - (pos.ptr_ - front_) * sizeof(T));
+            // *(pos.ptr_) = value;
+        }
+    }
+    
+    // erases element at pos
+    void erase(iterator pos);
+
+    // adds an element to the end
+    void push_back(const_reference value) {
+
+    }
+
+    // removes the last element
+    void pop_back();
+
+    // swaps the contents
+    void swap(vector& other) {
+        std::swap(other.size_, size_);
+        std::swap(other.alloc_size_, alloc_size_);
+        std::swap(other.first_, first_);
+    }
 };
 } // namespace s21
 
