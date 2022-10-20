@@ -88,6 +88,8 @@ class vector {
             delete[] first_;
             first_ = nullptr;
         }
+        size_ = 0;
+        alloc_size_ = 0;
     }
 
     vector& operator=(const vector& v) {
@@ -156,6 +158,7 @@ class vector {
     // Iterators
     iterator begin() { return iterator(first_); }
     iterator end() { return iterator(first_ + size_); }
+
     const_iterator begin() const { return const_iterator(first_); }
     const_iterator end() const { return const_iterator(first_ + size_); }
 
@@ -181,13 +184,12 @@ class vector {
 
     // allocate storage of size elements and copies current array elements to a newely allocated array
     void reserve(size_type size) {
-        if (size_ > alloc_size_) {
-            size_type copyHelper = alloc_size_;
+        if (size > alloc_size_) {
             alloc_size_ = size;
-            pointer tmp = new T[alloc_size_];
-            std::copy(first_, first_ + copyHelper, tmp);
+            T* reallocated = new T[alloc_size_];
+            std::memcpy(reallocated, first_, size_ * sizeof(T));
             delete[] first_;
-            first_ = tmp;
+            first_ = reallocated;
         }
     }
      
@@ -197,13 +199,13 @@ class vector {
     }
 
     // reduces memory usage by freeing unused memory
-    void shrink_to_fit(size_type newSize) {
-        if (newSize < size_) {
-            pointer tmp = new T[newSize];
-            std::memmove(tmp, first_, size_ * sizeof(T));
+    void shrink_to_fit() {
+        if (alloc_size_ > size_) {
+            alloc_size_ = size_;
+            T* reallocated = new T[alloc_size_];
+            std::memmove(reallocated, first_, size_ * sizeof(T));
             delete[] first_;
-            first_ = tmp;
-            size_ = newSize;
+            first_ = reallocated;
         }
     }
 
@@ -219,7 +221,7 @@ class vector {
         size_++;
         if (first_ == nullptr) {
             alloc_size_ = 1;
-            first_ = new value_type[value];
+            first_ = new value_type[alloc_size_];
             *first_ = value;
             return iterator(first_);
         }
@@ -277,6 +279,18 @@ class vector {
         std::swap(other.alloc_size_, alloc_size_);
         std::swap(other.first_, first_);
     }
+
+      template <class... Args>
+  iterator emplace(const_iterator pos, Args&&... args) {
+    value_type val(args...);
+    return this->insert(pos, val);
+  }
+
+  template <class... Args>
+  iterator emplace_back(Args&&... args) {
+    value_type val(args...);
+    return this->insert(this->end(), val);
+  }
 };
 
 template<class T>
@@ -292,6 +306,8 @@ class iterator_vector
     using reference = T&;
 
     pointer ptr_;
+
+    public:
 
     iterator_vector() : ptr_(nullptr) {};
     iterator_vector(pointer ptr) : ptr_(ptr) {};
