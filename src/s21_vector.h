@@ -23,10 +23,10 @@ class vector {
     using pointer = T*;
 
     // reference T & defines the type of the reference to an element
-    using reference = value_type&;
+    using reference = T&;
 
     // const_reference const T & defines the type of the constant reference
-    using const_reference = const value_type&;
+    using const_reference = const T&;
 
     // iterator	T * or internal class VectorIterator<T> defines the type for iterating through the container
     using iterator = iterator_vector<T>;
@@ -76,7 +76,6 @@ class vector {
         }
     }
 
-    // Не работает
     vector(vector &&v) : size_(v.size_), alloc_size_(v.alloc_size_) {
         first_ = v.first_;
         v.first_ = nullptr;
@@ -87,16 +86,56 @@ class vector {
     ~vector() {
         if (first_ != nullptr) {
             delete[] first_;
+            first_ = nullptr;
         }
     }
 
-    vector& operator=(vector &&v);
-    vector& operator=(const vector& other); // Пока не знаю как и зачем это нужно
+    vector& operator=(const vector& v) {
+        if (first_ == v.first_) {
+            return *this;
+        }
+
+        if (first_ != nullptr) {
+            delete[] first_;
+        }
+
+        size_ = v.size_;
+        alloc_size_ = v.alloc_size_;
+
+        if (size_) {
+            first_ = new value_type[alloc_size_];
+            std::copy(v.first_, v.first_ + v.size_, first_);
+        } else {
+            first_ = nullptr;
+        }
+
+        return *this;
+    }
+
+    vector& operator=(vector &&v) noexcept {
+        if (this == v) {
+            return *this;
+        }
+
+        if (first_ != nullptr) {
+            delete[] first_;
+        }
+
+        first_ = v.first_;
+        size_ = v.size_;
+        alloc_size_ = v.alloc_size_;
+
+        v.first_ = nullptr;
+        v.alloc_size_ = v.size_ = 0;
+        return *this;
+    }
 
     // Methods for acces of elements
 
     // access specified element with bounds checking
     reference at(size_type pos) {
+        if (pos < 0 || pos > size_ - 1)
+            throw std::out_of_range("index out of range");
         return *(first_ + pos);
     }
 
@@ -125,7 +164,7 @@ class vector {
     // checks whether the container is empty
     [[nodiscard]] bool empty() {
         if (size_ == 0) {
-        return true;
+            return true;
         }
         return false;
     }
@@ -136,14 +175,16 @@ class vector {
     }
 
     // returns the maximum possible number of elements
-    [[nodiscard]] size_type max_size();
+    [[nodiscard]] size_type max_size() {
+        return alloc_size_ * sizeof(value_type);
+    }
 
     // allocate storage of size elements and copies current array elements to a newely allocated array
     void reserve(size_type size) {
         if (size_ > alloc_size_) {
             size_type copyHelper = alloc_size_;
             alloc_size_ = size;
-            T* tmp = new T[alloc_size_];
+            pointer tmp = new T[alloc_size_];
             std::copy(first_, first_ + copyHelper, tmp);
             delete[] first_;
             first_ = tmp;
@@ -158,7 +199,7 @@ class vector {
     // reduces memory usage by freeing unused memory
     void shrink_to_fit(size_type newSize) {
         if (newSize < size_) {
-            T* tmp = new T[newSize];
+            pointer tmp = new T[newSize];
             std::memmove(tmp, first_, size_ * sizeof(T));
             delete[] first_;
             first_ = tmp;
@@ -179,27 +220,56 @@ class vector {
         if (first_ == nullptr) {
             alloc_size_ = 1;
             first_ = new value_type[value];
-            first_ = *value;
-            return iterator(pos);
+            *first_ = value;
+            return iterator(first_);
         }
 
         if (size_ <= alloc_size_) {
-            // std::memmove(pos.ptr_ + 1, pos.ptr_,
-            //     (size_ - 1) * sizeof(T) - (pos.ptr_ - front_) * sizeof(T));
-            // *(pos.ptr_) = value;
+            std::memmove(pos.ptr_ + 1, pos.ptr_,
+                (size_ - 1) * sizeof(T) - (pos.ptr_ - first_) * sizeof(T));
+            *(pos.ptr_) = value;
+            return iterator(pos);
+        } else {
+            alloc_size_ *= 2;
+            pointer reallocated = new T[alloc_size_];
+            
+            std::memmove(reallocated, first_, (size_ - 1) * sizeof(T));
+            size_type p = pos.ptr_ - first_;
+            delete[] first_;
+            
+            first_ = reallocated;
+
+            if (p != size_ - 1) {
+                std::memmove(first_ + p + 1, first_ + p, (size_ - 1 - p) * sizeof(T));
+            }
+            
+            *(first_ + p) = value;
+            return iterator(first_ + p);
         }
     }
     
     // erases element at pos
-    void erase(iterator pos);
+    void erase(iterator pos) {
+        if (first_ == nullptr) {
+            return;
+        }
+
+        std::memmove(pos.ptr_, pos.ptr_ + 1,
+            (size_ - 1) * sizeof(value_type) - (pos.ptr_ - first_) * sizeof(value_type));
+        size_--;
+    }
 
     // adds an element to the end
     void push_back(const_reference value) {
-
+        this->insert(this->end(), value);
     }
 
     // removes the last element
-    void pop_back();
+    void pop_back() {
+        if (size_ == 0)
+            return;
+        size_--;
+    }
 
     // swaps the contents
     void swap(vector& other) {
@@ -208,15 +278,113 @@ class vector {
         std::swap(other.first_, first_);
     }
 };
+
+template<class T>
+class iterator_vector
+{
+    friend class vector<T>;
+    friend class const_iterator_vector<T>;
+
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = T;
+    using pointer = T*;
+    using reference = T&;
+
+    pointer ptr_;
+
+    iterator_vector() : ptr_(nullptr) {};
+    iterator_vector(pointer ptr) : ptr_(ptr) {};
+    value_type& operator*() const { return (*ptr_); }
+    pointer operator->() { return ptr_; }
+
+    iterator_vector& operator++() {
+        ptr_++;
+        return *this;
+    }
+
+    iterator_vector& operator--() {
+        ptr_--;
+        return *this;
+    }
+
+    iterator_vector operator++(int) {
+        iterator_vector tmp = *this;
+        ++(*this);
+        return tmp;
+    }
+
+    iterator_vector operator--(int) {
+        iterator_vector tmp = *this;
+        --(*this);
+        return tmp;
+    }
+
+    friend bool operator==(const iterator_vector& a, const iterator_vector& b) {
+        return a.ptr_ == b.ptr_;
+    }
+
+    friend bool operator!=(const iterator_vector& a, const iterator_vector& b) {
+        return a.ptr_ != b.ptr_;
+    }
+
+    operator const_iterator_vector<T>() const {
+        return const_iterator_vector<T>(ptr_);
+    }
+};
+
+template <class T>
+class const_iterator_vector {
+    friend class vector<T>;
+    friend class iterator_vector<T>;
+
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = T;
+    using pointer = T*;  // or also value_type*
+    using reference = T&;
+    
+    pointer ptr_;
+
+    public:
+    const_iterator_vector() : ptr_(nullptr) {};
+    const_iterator_vector(pointer ptr) : ptr_(ptr) {};
+    value_type operator*() const { return (*ptr_); }
+    pointer operator->() { return ptr_; }
+
+    const_iterator_vector& operator++() {
+        ptr_++;
+        return *this;
+    }
+
+    const_iterator_vector& operator--() {
+        ptr_--;
+        return *this;
+    }
+
+    const_iterator_vector operator++(int) {
+        const_iterator_vector tmp = *this;
+        ++(*this);
+        return tmp;
+    }
+
+    const_iterator_vector operator--(int) {
+        const_iterator_vector tmp = *this;
+        --(*this);
+        return tmp;
+    }
+
+    friend bool operator==(const const_iterator_vector& a, const const_iterator_vector& b) {
+        return a.ptr_ == b.ptr_;
+    }
+
+    friend bool operator!=(const const_iterator_vector& a, const const_iterator_vector& b) {
+        return a.ptr_ != b.ptr_;
+    }
+
+    operator iterator_vector<T>() const { return iterator_vector<T>(ptr_); }
+};
+
 } // namespace s21
 
 #endif // _SRC_S21_VECTOR_H_
-
-// Пока не нашел нужно ли где-то их применять или нет
-// ========================================================================
-// using const_pointer = const T*;
-// using allocator_type = Allocator;
-// using difference_type = std::ptrdiff_t;
-// using pointer = std::allocator_traits<Allocator>::pointer;
-// using const_pointer = std::allocator_traits<Allocator>::const_pointer;
-// ========================================================================

@@ -15,11 +15,9 @@ TEST(vector, constructor) {
     vector<int>a{555, 1, 2, 3, 4};
     vector<int>b(a);
 
-    std::cout << "            a[0] = " << a[0] << std::endl;
+    vector<int>c(b);
 
-    std::cout << "            b[0] = " << b[0] << std::endl;
-    
-    ASSERT_EQ(a[0], b[0]);
+    ASSERT_EQ(a[0], c[0]);
 }
 
 TEST(vector, at) {
@@ -54,23 +52,39 @@ TEST(vector, clear) {
     vector<int>a{1, 2, 3, 4, 5, 6};
     vector<int>b{-1, -2, -3, -4, -5, -6};
     for (int i = 0; i < 6; i++) {
-        CT "a = " << a[i] << " " << "b =" << b[i] << EN
     }
     CT EN
     a.swap(b);
     for (int i = 0; i < 6; i++) {
-        CT "a = " << a[i] << " " << "b =" << b[i] << EN
         ASSERT_TRUE(a[i] < 0);
     }
     a.clear();
     b.clear();
 }
 
-TEST(vector, PushPop) {
-    vector<int>a;
-    a.push_back(5);
-    
+TEST(vector, PushPopInsert) {
+    vector<int>a{1,2,3,4,5};
+
+    a.push_back(6);
+
+    ASSERT_EQ(a[5], 6);
+
+    a.pop_back();
+
+    ASSERT_EQ(a.size(), 5);
 }
+
+TEST(vector, eraece) {
+    vector<int>a{1,2,3,4,5};
+    a.erase(a.begin());
+    ASSERT_EQ(a[0], 2);
+    a.pop_back();
+    ASSERT_EQ(a.size(), 3);
+}
+
+// TEST(vector, other) {
+//     vector<int>a{1,2,3,4,5};   
+// }
 
 int main() {
     testing::InitGoogleTest();
