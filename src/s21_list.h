@@ -9,12 +9,6 @@
 namespace s21 {
 
 template <class T>
-class list;
-
-template <class T>
-class ListIterator;
-
-template <class T>
 struct Node {
     T value;
     Node *prev = nullptr;
@@ -53,6 +47,9 @@ struct Node {
 };
 
 template <class T>
+class list;
+
+template <class T>
 class ListConstIterator;
 
 template <class T>
@@ -62,14 +59,20 @@ class ListIterator {
         friend class ListConstIterator<T>;
         Node<T> *ptr = nullptr;
     public:
-        T& operator*() {
-            return ptr->value;
-        }
-        ListIterator& operator++(int) {
+        T& operator*() { return ptr->value; }
+        ListIterator operator++(int) {
             ptr = ptr->next;
             return *this;
         }
-        ListIterator& operator--(int) {
+        ListIterator operator--(int) {
+            ptr = ptr->prev;
+            return *this;
+        }
+        ListIterator& operator++() {
+            ptr = ptr->next;
+            return *this;
+        }
+        ListIterator& operator--() {
             ptr = ptr->prev;
             return *this;
         }
@@ -90,14 +93,20 @@ class ListConstIterator {
         friend class list<T>;
         Node<T> *ptr = nullptr;
     public:
-        const T& operator*() {
-            return ptr->value;
-        }
-        ListConstIterator& operator++(int) {
+        const T& operator*() { return ptr->value; }
+        ListConstIterator operator++(int) {
             ptr = ptr->next;
             return *this;
         }
-        ListConstIterator& operator--(int) {
+        ListConstIterator operator--(int) {
+            ptr = ptr->prev;
+            return *this;
+        }
+        ListConstIterator& operator++() {
+            ptr = ptr->next;
+            return *this;
+        }
+        ListConstIterator& operator--() {
             ptr = ptr->prev;
             return *this;
         }
@@ -144,7 +153,10 @@ class list {
             closedFake();
         }
         template<class sw>
-        void swap(sw *a, sw *b) {
+        void swap(sw *a, sw *b) {        // template<class... Args>
+        // iterator emplace(const_iterator pos, Args&&... args) {
+
+        // }
             sw buff = *a;
             *a = *b;
             *b = buff;
@@ -238,27 +250,17 @@ class list {
             }
             return false;
         }
-        const_reference front() {
-            return head->value;
-        }
-        const_reference back() {
-            return root->value;
-        }
-        iterator begin() {
-            iterator begin_iter(head);
-            return begin_iter;
-        }
-        iterator end() {
-            iterator fake_iter(fake);
-            return fake_iter;
-        }
+        const_reference front() { return head->value; }
+        const_reference back() { return root->value; }
+        iterator begin() { return iterator(head); }
+        const_iterator begin() const{ return const_iterator(head); }
+        iterator end() { return iterator(fake); }
+        const_iterator end() const { return const_iterator(fake); }
         bool empty() {
             if ((head == fake && root == fake) || size_ == 0) return true;
             return false;
         }
-        size_type size() {
-            return size_;
-        }
+        size_type size() { return size_; }
         size_type max_size() {
             return (std::numeric_limits<size_type>::max() / sizeof(node) / 2);  // include <limits>
         }
