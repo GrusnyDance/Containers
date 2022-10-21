@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <utility>  // initializer list
 
 // принимает пару
 template <typename Data>
@@ -83,9 +85,9 @@ class TreeIterator {
   friend class TreeNode<Data>;
   node_pointer ptr_;
 
-  TreeIterator(){ptr_ = nullptr};
-  TreeIterator(node_pointer ptr){ptr_ = ptr};
-  TreeIterator(const TreeIterator& other) : { *this = other; }
+  TreeIterator() { ptr_ = nullptr; };
+  TreeIterator(node_pointer ptr) { ptr_ = ptr; };
+  TreeIterator(const TreeIterator& other) { *this = other; }
   ~TreeIterator() {}
 
   TreeIterator& operator=(const TreeIterator& other) {
@@ -119,4 +121,145 @@ class TreeIterator {
   value_type operator*() { return (ptr_->data_); }
   bool operator==(const TreeIterator& other) { return (ptr_ == other.ptr_); }
   bool operator!=(const TreeIterator& other) { return (ptr_ != other.ptr_); }
+};
+
+template <typename Key, typename Value>
+class Map {
+ protected:
+  using key_type = Key;
+  using mapped_type = Value;
+  using value_type = std::pair<key_type, mapped_type>;
+  using node = TreeNode<value_type>;
+  using size_type = size_t;
+  using reference = value_type&;
+  using const_reference = const value_type&;
+  using iterator = TreeIterator<value_type>;
+  using const_iterator = TreeIterator<value_type, 1>;
+
+  node* root_;
+  node* fakeNode;  // нода, на которую будет указывать end
+  size_type size_ = 0;
+  std::allocator<key_type> alloc_;  // выяснить зачем
+  Compare<key_type, value_type> mapCompare;  // написать класс сравнения
+
+ public:
+  friend class TreeNode<value_type>;
+  friend class TreeIterator<value_type>;
+
+  Map() {
+    fakeNode = new node();  // скобки для вызова дефолтного конструктора
+    root_ = new node();
+    root_->right_ = fakeNode;
+    fakeNode->parent_ = root_;
+  }
+
+  // инициализация листом
+  Map(std::initializer_list<key_type> const& items) : Map() {
+    for (auto iter = items.begin(); iter != items.end(); ++iter) insert(*iter);
+  }
+
+  Map(const Map& other) : Map() {  // копирование
+    if (other.size_ > 0) {
+      copyRecursive(root_, fakeNode, other.root_, other.fakeNode);
+      size_ = other.size_;
+    }
+  }
+
+  void copyRecursive(node* root, node* root_fake, node* other,
+                     node* other_fake) {
+    root->data_ = other->data_;
+    if (other->left_ != nullptr) {
+      node* temp = new node();
+      temp->parent_ = root;
+      root->left_ = temp;
+      MapCopy(temp, root_fake, other->left_, other_fake);
+    }
+    if (other->right_ != nullptr) {
+      if (other->right_ == other_fake) {
+        root->right_ = root_fake;
+        root_fake->parent_ = root;
+      } else {
+        node* temp = new node();
+        temp->parent_ = root;
+        root->right_ = temp;
+        MapCopy(temp, root_fake, other->right_, other_fake);
+      }
+    }
+  }
+
+  Map(Set&& other) : Map() {  // перемещение
+    delete fakeNode;
+    delete root_;
+    root_ = other.root_;
+    size_ = other.size_;
+    fakeNode = other.fakeNode;
+    other.root_ = nullptr;
+    other.fakeNode = nullptr;
+    other.size_ = 0;
+  }
+
+  ~Map() {  // деструктор
+    if (size_ > 0) {
+      clearRecursive(root_);
+      root_ = fakeNode = nullptr;
+      size_ = 0;
+    }
+    if (fakeNode) delete fakeNode;
+    if (root_) delete root_;
+  }
+
+  void clearRecursive(node* root) {
+    if (root) {
+      if (root->left_) clearRecursive(root->left_);
+      if (root->right) clearRecursive(root->right);
+      delete root;
+    }
+  }
+
+  // оператор присваивания перемещением
+  void operator=(Map&& other) {
+    Set<value_type, cmp_type>::clearData_(this->root_);
+    delete this->nill_;
+    this->root_ = other.root_;
+    this->size_ = other.size_;
+    this->nill_ = other.nill_;
+    other.root_ = nullptr;
+    other.nill_ = nullptr;
+    other.size_ = 0;
+  }
+
+  // доступ к элементу по ключу
+  mapped_type& at(const key_type& key) {
+    auto result = containsRef_(key);
+    if (result.second == false)
+      throw std::out_of_range("There is no pair with such key");
+    return result.first;
+  }
+  // доступ к элементу по ключу (без исключений)
+  mapped_type& operator[](const key_type& key) {
+    try {
+      return at(key);
+    } catch (...) {
+      Set<value_type, cmp_type>::insert({key, mapped_type()});
+      return at(key);
+    }
+  }
+  // вставка по паре
+  std::pair<iterator, bool> insert(const value_type& value) {
+    return Set<value_type, cmp_type>::insert({value.first, value.second});
+  }
+  // вставка по ключу и значению
+  std::pair<iterator, bool> insert(const key_type& key,
+                                   const mapped_type& obj) {
+    return Set<value_type, cmp_type>::insert({key, obj});
+  }
+  // вставка или присваивание по ключу и значению
+  std::pair<iterator, bool> insert_or_assign(const Key& key, const T& obj) {
+    auto pair = Set<value_type, cmp_type>::insert({key, obj});
+    if (pair.second == false) at(key) = obj;
+    return pair;
+  }
+
+  // проверяет что в контейнере содержится пара с таким ключом
+  bool contains(const Key& key) { return containsRef_(key).second; }
 };
