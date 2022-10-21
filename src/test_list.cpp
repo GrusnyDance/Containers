@@ -78,7 +78,7 @@ TEST(listTest, initializerList3) {
     fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(test, norm);
 }
 
-TEST(listTest, newCopyList) {
+TEST(listTest, newCopyList1) {
     using type = double;
     std::list<type> copyNorm{1.45, 2, -4, 5.55, -65.56, 0, 11};
     s21::list<type> copyTest{1.45, 2, -4, 5.55, -65.56, 0, 11};
@@ -88,14 +88,36 @@ TEST(listTest, newCopyList) {
     fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(copyTest, copyNorm);
 }
 
-TEST(listTest, newMoveList) {
+TEST(listTest, newCopyList2) {
     using type = std::string;
-    std::list<type> moveNorm{"qwerty", "asdf", " "};
-    s21::list<type> moveTest{"qwerty", "asdf", " "};
-    std::list<type> norm = moveNorm;
-    s21::list<type> test = moveTest;
+    std::list<type> copyNorm{"qwerty", "asdf", " "};
+    s21::list<type> copyTest{"qwerty", "asdf", " "};
+    std::list<type> norm = copyNorm;
+    s21::list<type> test = copyTest;
     fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(test, norm);
-    fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(moveTest, moveNorm);
+    fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(copyTest, copyNorm);
+}
+
+TEST(listTest, newMoveList1) {
+    using type = uint;
+    std::list<type> moveNorm{1, 2, 3, 4, 5};
+    s21::list<type> moveTest{1, 2, 3, 4, 5};
+    std::list<type> norm(std::move(moveNorm));
+    s21::list<type> test(std::move(moveTest));
+    fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(test, norm);
+    shortListCheck<type>(moveTest, moveNorm);
+}
+
+TEST(listTest, newMoveList2) {
+    using type = float;
+    std::list<type> moveNorm{1.7, 2.8, -0.7, 4.7, -5.66};
+    s21::list<type> moveTest{1.7, 2.8, -0.7, 4.7, -5.66};
+    std::list<type> norm;
+    norm = std::move(moveNorm);
+    s21::list<type> test;
+    test = std::move(moveTest);
+    fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(test, norm);
+    shortListCheck<type>(moveTest, moveNorm);
 }
 
 TEST(listTest, clearList) {
@@ -169,6 +191,8 @@ TEST(listTest, insert) {
     s21::list<type> test{0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11};
     std::list<type>::iterator normIter = norm.end();
     s21::list<type>::iterator testIter = test.end();
+    *normIter = 111;
+    *testIter = 111;
     fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(test, norm);
     for (int k = 0; k < 45; k++) {
         normIter = norm.insert(normIter, (float)k / 12.12);
@@ -269,9 +293,12 @@ TEST(listTest, splice) {
 }
 
 TEST(listTest, reverse) {
-    using type = s21::list<int>;
-    std::list<type> norm{{1, 2, 3}, {5, 6}, {0, 0, 0, 0}};
-    s21::list<type> test{{1, 2, 3}, {5, 6}, {0, 0, 0, 0}};
+    using type = std::list<int>;
+    type a{1, 2, 3};
+    type b{5, 6};
+    type c{-1, -1, 0, 0};
+    std::list<type> norm{c, a, b};
+    s21::list<type> test{c, a, b};
     fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(test, norm);
     norm.reverse();
     test.reverse();
@@ -302,6 +329,13 @@ TEST(listTest, sort) {
     norm.sort();
     test.sort();
     fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(test, norm);
+}
+
+TEST(listTest, operatorCompare) {
+    using type = std::pair<size_t, long>;
+    s21::list<type> test1{{1, -100000}, {2, 21212121}, {3, 4545}};
+    s21::list<type> test2(test1);
+    ASSERT_EQ(test1, test2);
 }
 
 int main(int argc, char **argv) {
