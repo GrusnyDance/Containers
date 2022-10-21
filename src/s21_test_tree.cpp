@@ -14,15 +14,19 @@ using namespace std;
 
 int main() {
   map<int, string> test;
-  //   map<int, string> test(pair<int, string>(3, "sobak"));
+  // map<int, string> test(pair<int, string>(3, "sobak"));
   // pair<int, string> a(3, "sobak");
   // cout << a.first;
-  // test[10] = "lalala";
-  // test[3] = "am testing map";
+  test[10] = "lalala";
+  test[4] = "am testing map";
+  test.insert(pair<int, string>(3, "sobak"));
 
-  for (auto x = test.begin(); x != test.end(); ++x) {
-    cout << x->first << endl;
-  }
+  // cout << test[3];
+  cout << test.max_size();
+
+  // for (auto x = test.begin(); x != test.end(); ++x) {
+  //   cout << x->first << endl;
+  // }
   // auto my_it = test.begin();
   // auto my_it1 = ++my_it;
 

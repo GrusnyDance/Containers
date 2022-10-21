@@ -139,7 +139,7 @@ class Map {
   node* root_;
   node* fakeNode;  // нода, на которую будет указывать end
   size_type size_ = 0;
-  std::allocator<key_type> alloc_;  // выяснить зачем
+  std::allocator<key_type> alloc_;  // для max_size
   Compare<key_type, value_type> mapCompare;  // написать класс сравнения
 
  public:
@@ -200,7 +200,7 @@ class Map {
 
   ~Map() {  // деструктор
     if (size_ > 0) {
-      clearRecursive(root_);
+      clearRecursive(root_);  // написать отдельную функцию clear по таску
       root_ = fakeNode = nullptr;
       size_ = 0;
     }
@@ -218,48 +218,66 @@ class Map {
 
   // оператор присваивания перемещением
   void operator=(Map&& other) {
-    Set<value_type, cmp_type>::clearData_(this->root_);
-    delete this->nill_;
-    this->root_ = other.root_;
-    this->size_ = other.size_;
-    this->nill_ = other.nill_;
-    other.root_ = nullptr;
-    other.nill_ = nullptr;
+    if (this == &other) return *this;
+    clearRecursive(root_);
+
+    root_ = other.root_;
+    size_ = other.size_;
+    fakeNode = other.fakeNode;
+    other.root_ = other.fakeNode = nullptr;
     other.size_ = 0;
   }
 
-  // доступ к элементу по ключу
+  // проверяет, существует ли ключ
   mapped_type& at(const key_type& key) {
-    auto result = containsRef_(key);
-    if (result.second == false)
-      throw std::out_of_range("There is no pair with such key");
-    return result.first;
+    node* res = findNode(
+        key,
+        root_);  // не сработает без передачи вызывающего объекта тк рекурсия?
+    if (!res) {
+      throw std::out_of_range("There is no such key");
+    }
+    return res->data_.second;
   }
-  // доступ к элементу по ключу (без исключений)
+
+  node* findNode(const key_type& key, node* root) {
+    if (size_ == 0 || root == 0 || root == this->fakeNode) {
+      return nullptr;
+    }
+    if (root->data_.first == key) {
+      return root;
+    }
+    return (root->data_.first > key) ? findNode(key, root->left)
+                                     : findNode(key, root->right);
+  }
+
+  // присваивает если ключ не найден
   mapped_type& operator[](const key_type& key) {
     try {
       return at(key);
-    } catch (...) {
-      Set<value_type, cmp_type>::insert({key, mapped_type()});
+    } catch (...) {  // ловит любое исключение
+      insert(value_type(key, 0));
       return at(key);
     }
   }
-  // вставка по паре
-  std::pair<iterator, bool> insert(const value_type& value) {
-    return Set<value_type, cmp_type>::insert({value.first, value.second});
+
+  iterator begin() {
+    iterator result(root_);
+    return result;
   }
-  // вставка по ключу и значению
-  std::pair<iterator, bool> insert(const key_type& key,
-                                   const mapped_type& obj) {
-    return Set<value_type, cmp_type>::insert({key, obj});
+  iterator end() {
+    iterator result(fakeNode);
+    return result;
   }
-  // вставка или присваивание по ключу и значению
-  std::pair<iterator, bool> insert_or_assign(const Key& key, const T& obj) {
-    auto pair = Set<value_type, cmp_type>::insert({key, obj});
-    if (pair.second == false) at(key) = obj;
-    return pair;
+  const_iterator begin() const {
+    const_iterator result(root_);
+    return result;
+  }
+  const_iterator end() const {
+    const_iterator result(fakeNode);
+    return result;
   }
 
-  // проверяет что в контейнере содержится пара с таким ключом
-  bool contains(const Key& key) { return containsRef_(key).second; }
+  bool empty() const { return size_ = 0; }
+  size_type size() const { return size_; }
+  size_type max_size() const { return alloc_.max_size(); }
 };
