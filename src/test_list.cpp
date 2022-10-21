@@ -112,9 +112,9 @@ TEST(listTest, newMoveList2) {
     using type = float;
     std::list<type> moveNorm{1.7, 2.8, -0.7, 4.7, -5.66};
     s21::list<type> moveTest{1.7, 2.8, -0.7, 4.7, -5.66};
-    std::list<type> norm;
+    std::list<type> norm{1, 2};
     norm = std::move(moveNorm);
-    s21::list<type> test;
+    s21::list<type> test{1, 2};
     test = std::move(moveTest);
     fullListCheck<type, s21::list<type>::iterator, std::list<type>::iterator>(test, norm);
     shortListCheck<type>(moveTest, moveNorm);

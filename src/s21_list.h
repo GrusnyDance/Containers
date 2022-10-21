@@ -191,7 +191,8 @@ class list {
             head = l.head;
             root = l.root;
             l.fakeAllocate();
-            swap<size_type>(&size_, &l.size_);
+            size_ = l.size_;
+            l.size_ = 0;
             return *this;
         }
         list(list<value_type> &&l) {  // move
@@ -199,7 +200,8 @@ class list {
             head = l.head;
             root = l.root;
             l.fakeAllocate();
-            swap<size_type>(&size_, &l.size_);
+            size_ = l.size_;
+            l.size_ = 0;
         }
         ~list() {
             while (head != fake) {
