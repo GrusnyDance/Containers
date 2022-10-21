@@ -124,6 +124,20 @@ class TreeIterator {
 };
 
 template <typename Key, typename Value>
+struct Compare {
+  using myPair = std::pair<Key, Value>;
+  myPair obj_;
+  Compare(myPair obj){obj_ = obj};
+
+  bool operator<(const myPair& a) const { return obj_.first < a.first; }
+  bool operator>(const myPair& a) const { return obj_.first > a.first; }
+  bool operator<=(const myPair& a) const { return obj_.first <= a.first; }
+  bool operator>=(const myPair& a) const { return obj_.first >= a.first; }
+  bool operator==(const myPair& a) const { return obj_.first == a.first; }
+  bool operator!=(const myPair& a) const { return obj_.first != a.first; }
+};
+
+template <typename Key, typename Value>
 class Map {
  protected:
   using key_type = Key;
@@ -135,12 +149,13 @@ class Map {
   using const_reference = const value_type&;
   using iterator = TreeIterator<value_type>;
   using const_iterator = TreeIterator<value_type, 1>;
+  using map_compare =
+      Compare<key_type, mapped_type>;  // как функтор для сравнения пар
 
   node* root_;
   node* fakeNode;  // нода, на которую будет указывать end
   size_type size_ = 0;
   std::allocator<key_type> alloc_;  // для max_size
-  Compare<key_type, value_type> mapCompare;  // написать класс сравнения
 
  public:
   friend class TreeNode<value_type>;
@@ -199,8 +214,12 @@ class Map {
   }
 
   ~Map() {  // деструктор
+    clear();
+  }
+
+  void clear() {
     if (size_ > 0) {
-      clearRecursive(root_);  // написать отдельную функцию clear по таску
+      clearRecursive(root_);  // проверить находит ли this
       root_ = fakeNode = nullptr;
       size_ = 0;
     }
@@ -280,4 +299,74 @@ class Map {
   bool empty() const { return size_ = 0; }
   size_type size() const { return size_; }
   size_type max_size() const { return alloc_.max_size(); }
+
+  // inserts node and returns iterator to where the element is in the container
+  // and bool denoting whether the insertion took place
+  std::pair<iterator, bool> insert(const value_type& value) {
+    if (empty()) {
+      root_->data_ = value;
+      ++size_;
+      iterator res(root_);
+      return std::pair<iterator, bool>(res, true);
+    } else {
+      node* temp;
+      if ((temp = findNode(value.first, root_)) !=
+          nullptr) {  // TBD два раза проходится по дереву если insert or assign
+        iterator res(temp);
+        return std::pair<iterator, bool>(res, false);
+      }
+      temp = new node(value);
+      insertRecursive(root_, 0, temp, 0);
+      ++size_;
+      iterator res(temp);
+      return std::pair<iterator, bool>(res, true);
+    }
+  }
+
+  void insertRecursive(node* root, node* parent, node* val, bool right) {
+    if (!root || root == fakeNode) {
+      if (root == fakeNode) {
+        parent->right_ = fakeNode->parent_ = val;
+        val->right_ = fakeNode;
+        val->parent_ = parent;
+      } else {
+        val->parent_ = parent;
+        if (right) {
+          parent->right_ = val;
+        } else {
+          parent->left_ = val;
+        }
+      }
+      ++size_;
+    }
+    if (map_compare(val->data_) > root->data_) {
+      insertRecursive(root->right_, root, val, 1);
+    } else {
+      insertRecursive(root->right_, root, val, 0);
+    }
+  }
+
+  std::pair<iterator, bool> insert(const key_type& key,
+                                   const mapped_type& obj) {
+    std::pair<key_type, mapped_type> res(key, obj);
+    return insert(res);
+  }
+
+  std::pair<iterator, bool> insert_or_assign(const key_type& key,
+                                             const mapped_type& obj) {
+    std::pair<key_type, mapped_type> value(key, obj);
+    node* temp;
+    if ((temp = findNode(value.first, root_)) != nullptr) {
+      temp->data_.second = obj;
+      iterator res(temp);
+      return std::pair<iterator, bool>(res, false);
+    } else {
+      return insert(value);
+    }
+  }
+
+  bool contains(const key_type& key) {
+    node* res = findNode(key, root_);
+    return (res) ? 1 : 0;
+  }
 };

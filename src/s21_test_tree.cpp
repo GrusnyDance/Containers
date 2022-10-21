@@ -18,11 +18,14 @@ int main() {
   // pair<int, string> a(3, "sobak");
   // cout << a.first;
   test[10] = "lalala";
-  test[4] = "am testing map";
-  test.insert(pair<int, string>(3, "sobak"));
+  test[3] = "am testing map";
+  cout << test.size();
+  test.insert_or_assign(3, "sobak");
+  // test.insert(3, "sobak");
 
-  // cout << test[3];
-  cout << test.max_size();
+  cout << test[3];
+  cout << test.size();
+  // cout << test.max_size();
 
   // for (auto x = test.begin(); x != test.end(); ++x) {
   //   cout << x->first << endl;
