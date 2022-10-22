@@ -211,7 +211,7 @@ class Map {
     }
   }
 
-  Map(Set&& other) : Map() {  // перемещение
+  Map(Map&& other) : Map() {  // перемещение
     delete fakeNode;
     delete root_;
     root_ = other.root_;
@@ -458,6 +458,39 @@ class Map {
         pos_ > parent_->left_ = nullptr;
       }
       delete pos.getPtr();
+    }
+  }
+
+  void swap(map& other) {
+    map temp = other;
+    other = *this;
+    *this = temp;
+  }
+
+  void merge(map& other) {
+    for (iterator it = begin(); it != end(); ++it) {
+      insertForMerge(it.getPtr());
+    }
+    other.root_ = nullptr;
+    other.size_ = 0;
+    delete other.fakeNode;
+  }
+
+  void insertForMerge(node* val) {
+    if (empty()) {
+      root_->data_ = val.data_;
+      ++size_;
+      delete val;
+    } else {
+      node* temp;
+      // если узел с таким ключом уже есть
+      if ((temp = findNode(val->data_.first, root_)) != nullptr) {
+        delete val;
+        return;
+      }
+      val->parent_ = val->left_ = val->right_ = nullptr;
+      insertRecursive(root_, 0, val, 0);
+      ++size_;
     }
   }
 
