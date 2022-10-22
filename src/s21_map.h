@@ -1,7 +1,10 @@
 #include <iostream>
+#include <limits>
 #include <string>
+#include <type_traits>
 #include <utility>  // initializer list
 
+namespace s21 {
 // принимает пару
 template <typename Data>
 class TreeNode {
@@ -125,7 +128,7 @@ class TreeIterator {
     return *this;
   }
 
-  node_pointer getPtr(){return ptr_};
+  node_pointer getPtr() { return ptr_; };
   node_pointer operator->() { return (ptr_); }
   value_type operator*() { return (ptr_->data_); }
   bool operator==(const TreeIterator& other) { return (ptr_ == other.ptr_); }
@@ -136,7 +139,7 @@ template <typename Key, typename Value>
 struct Compare {
   using myPair = std::pair<Key, Value>;
   myPair obj_;
-  Compare(myPair obj){obj_ = obj};
+  Compare(myPair obj) { obj_ = obj; };
 
   bool operator<(const myPair& a) const { return obj_.first < a.first; }
   bool operator>(const myPair& a) const { return obj_.first > a.first; }
@@ -164,13 +167,12 @@ class Map {
   node* root_;
   node* fakeNode;  // нода, на которую будет указывать end
   size_type size_ = 0;
-  std::allocator<key_type> alloc_;  // для max_size
 
  public:
   friend class TreeNode<value_type>;
   friend class TreeIterator<value_type>;
 
-  Map() {
+  Map() {                   // ok
     fakeNode = new node();  // скобки для вызова дефолтного конструктора
     root_ = new node();
     root_->right_ = fakeNode;
@@ -228,7 +230,7 @@ class Map {
 
   void clear() {
     if (size_ > 0) {
-      clearRecursive(root_);  // проверить находит ли this
+      clearRecursive(root_);
       root_ = fakeNode = nullptr;
       size_ = 0;
     }
@@ -239,14 +241,14 @@ class Map {
   void clearRecursive(node* root) {
     if (root) {
       if (root->left_) clearRecursive(root->left_);
-      if (root->right) clearRecursive(root->right);
+      if (root->right_) clearRecursive(root->right_);
       delete root;
     }
   }
 
   // оператор присваивания перемещением
   void operator=(Map&& other) {
-    if (this == &other) return *this;
+    if (this == &other) return;
     clearRecursive(root_);
 
     root_ = other.root_;
@@ -268,22 +270,28 @@ class Map {
   }
 
   node* findNode(const key_type& key, node* root) {
-    if (size_ == 0 || root == 0 || root == this->fakeNode) {
+    if (size_ == 0 || root == 0 || root == fakeNode) {
       return nullptr;
+      std::cout << "DEBUG 275" << std::endl;
     }
     if (root->data_.first == key) {
       return root;
     }
-    return (root->data_.first > key) ? findNode(key, root->left)
-                                     : findNode(key, root->right);
+    return (root->data_.first > key) ? findNode(key, root->left_)
+                                     : findNode(key, root->right_);
   }
 
   // присваивает если ключ не найден
   mapped_type& operator[](const key_type& key) {
     try {
       return at(key);
-    } catch (...) {  // ловит любое исключение
-      insert(value_type(key, 0));
+    } catch (...) {   // любое исключение
+      mapped_type a;  // обман компилятора:<>
+      if (std::is_same_v<mapped_type, std::string>) {
+        insert(value_type(key, a));
+      } else {
+        insert(value_type(key, 0));
+      }
       return at(key);
     }
   }
@@ -305,13 +313,16 @@ class Map {
     return result;
   }
 
-  bool empty() const { return size_ = 0; }
-  size_type size() const { return size_; }
-  size_type max_size() const { return alloc_.max_size(); }
+  bool empty() const { return size_ == 0; }
+  size_type size() const { return size_; }  // ok
+  size_type max_size() const {              // it works i have no idea how
+    return std::numeric_limits<size_type>::max() /
+           (sizeof(value_type) + 3 * sizeof(node*) + 8 * sizeof(bool)) / 2;
+  }
 
   // inserts node and returns iterator to where the element is in the container
   // and bool denoting whether the insertion took place
-  std::pair<iterator, bool> insert(const value_type& value) {
+  std::pair<iterator, bool> insert(const value_type& value) {  // ok
     if (empty()) {
       root_->data_ = value;
       ++size_;
@@ -346,12 +357,10 @@ class Map {
           parent->left_ = val;
         }
       }
-      ++size_;
-    }
-    if (map_compare(val->data_) > root->data_) {
+    } else if (map_compare(val->data_) > root->data_) {
       insertRecursive(root->right_, root, val, 1);
     } else {
-      insertRecursive(root->right_, root, val, 0);
+      insertRecursive(root->left_, root, val, 0);
     }
   }
 
@@ -403,7 +412,7 @@ class Map {
       delete pos.getPtr();
     } else {
       iterator parent = pos->parent_;
-      if (map_compare(*pos) > parent_->data_) {  // если pos правый узел
+      if (map_compare(*pos) > parent->data_) {  // если pos правый узел
         parent->right_ = pos->right_;
       } else {
         parent->left_ = pos->right_;
@@ -431,7 +440,7 @@ class Map {
         newMax->right_ = fakeNode;
         fakeNode->parent_ = newMax.getPtr();
       }
-      if (map_compare(*pos) > parent_->data_) {
+      if (map_compare(*pos) > parent->data_) {
         parent->right_ = newPos.getPtr();
       } else {
         parent->left_ = newPos.getPtr();
@@ -455,19 +464,19 @@ class Map {
       if (map_compare(*pos) > pos->parent_->data_) {
         pos->parent_->right_ = nullptr;
       } else {
-        pos_ > parent_->left_ = nullptr;
+        pos->parent_->left_ = nullptr;
       }
       delete pos.getPtr();
     }
   }
 
-  void swap(map& other) {
-    map temp = other;
+  void swap(Map& other) {
+    Map temp = other;
     other = *this;
     *this = temp;
   }
 
-  void merge(map& other) {
+  void merge(Map& other) {
     for (iterator it = begin(); it != end(); ++it) {
       insertForMerge(it.getPtr());
     }
@@ -499,3 +508,4 @@ class Map {
     return (res) ? 1 : 0;
   }
 };
+}  // namespace s21
