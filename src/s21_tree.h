@@ -71,6 +71,14 @@ class TreeNode {
       temp = temp->parent_;
     }
   }
+
+  TreeNode* getMinRight(TreeNode* current) {
+    TreeNode* temp = current.getPtr();
+    while (temp->left_) {
+      temp = temp->left_;
+    }
+    return temp;
+  }
 };
 
 // принимает пару, определяет как сравниваются ноды?? посмотреть как работает
@@ -117,7 +125,8 @@ class TreeIterator {
     return *this;
   }
 
-  node_pointer operator->() { return (ptr_); }  // какая то хуйня, мб убрать
+  node_pointer getPtr(){return ptr_};
+  node_pointer operator->() { return (ptr_); }
   value_type operator*() { return (ptr_->data_); }
   bool operator==(const TreeIterator& other) { return (ptr_ == other.ptr_); }
   bool operator!=(const TreeIterator& other) { return (ptr_ != other.ptr_); }
@@ -362,6 +371,93 @@ class Map {
       return std::pair<iterator, bool>(res, false);
     } else {
       return insert(value);
+    }
+  }
+
+  void erase(iterator pos) {  // 4 сценария
+    // нет детей
+    if (!pos->left_ && (!pos->right_ || pos->right_ == fakeNode)) {
+      deleteNoChildren(pos);
+    } else if (!pos->right_ || pos->right_ == fakeNode) {
+      deleteNoRightChildren(pos);
+    } else if (!pos->left_) {
+      deleteNoLeftChildren(pos);
+    } else {
+      deleteBothChildren(pos);
+    }
+    --size_;
+  }
+
+  void deleteBothChildren(iterator pos) {
+    node* minRight = getMinRight(pos->right_);
+    value_type val = minRight->data_;
+    iterator recursive(minRight);
+    erase(recursive);
+    pos->data_ = val;
+  }
+
+  void deleteNoLeftChildren(iterator pos) {
+    if (pos.getPtr() == root_) {
+      root_ = pos->right_;
+      root_->parent_ = nullptr;
+      delete pos.getPtr();
+    } else {
+      iterator parent = pos->parent_;
+      if (map_compare(*pos) > parent_->data_) {  // если pos правый узел
+        parent->right_ = pos->right_;
+      } else {
+        parent->left_ = pos->right_;
+      }
+      pos->right_->parent = parent;
+      delete pos.getPtr();
+    }
+  }
+
+  void deleteNoRightChildren(iterator pos) {
+    if (pos.getPtr() == root_) {
+      iterator newMax = --pos;
+      iterator newRoot = pos->left_;
+
+      newMax->right_ = fakeNode;
+      fakeNode->parent_ = newMax.getPtr();
+      root_ = newRoot.getPtr();
+      newRoot->parent_ = nullptr;
+      delete pos.getPtr();
+    } else {
+      iterator newPos = pos->left_;
+      iterator parent = pos->parent_;
+      if (pos->right_ == fakeNode) {
+        iterator newMax = --pos;
+        newMax->right_ = fakeNode;
+        fakeNode->parent_ = newMax.getPtr();
+      }
+      if (map_compare(*pos) > parent_->data_) {
+        parent->right_ = newPos.getPtr();
+      } else {
+        parent->left_ = newPos.getPtr();
+      }
+      newPos->parent_ = parent.getPtr();
+      delete pos.getPtr();
+    }
+  }
+
+  void deleteNoChildren(iterator pos) {
+    if (!size_) {
+      ++size_;
+      return;
+    } else if (pos.getPtr() == root_) {
+      size_ = 1;
+    } else if (pos->right_ == fakeNode) {
+      fakeNode->parent_ = pos->parent_;
+      pos->parent->right_ = fakeNode;
+      delete pos.getPtr();
+    } else {
+      if (map_compare(*pos) > pos->parent_->data_) {
+        pos->parent_->right_ = nullptr;
+      } else {
+        pos_ > parent_->left_ = nullptr;
+      }
+      delete pos.getPtr();
     }
   }
 
