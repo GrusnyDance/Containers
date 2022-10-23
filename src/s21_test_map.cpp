@@ -3,7 +3,7 @@
 #include <string>
 #include <utility>
 
-#include "s21_map.h"
+#include "map.hpp"
 
 using namespace std;
 
@@ -44,11 +44,11 @@ int main() {
   myMap.insert(h);
   myMap.insert(j);
 
-  myMap2.insert(c);
-  myMap2.insert(f);
-  myMap2.insert(g);
+  // myMap2.insert(c);
+  // myMap2.insert(f);
+  // myMap2.insert(g);
 
-  s21::Map<int, string> lala(myMap2);
+  // s21::Map<int, string> lala(myMap2);
   // myMap.erase(++it);
 
   // test.insert(c);

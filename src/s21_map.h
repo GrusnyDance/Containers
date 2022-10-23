@@ -8,12 +8,13 @@ namespace s21 {
 // принимает пару
 template <typename Data>
 class TreeNode {
- public:
+ protected:
   Data data_;
   TreeNode* left_;
   TreeNode* right_;
   TreeNode* parent_;
 
+ public:
   // конструктор без параметров
   TreeNode() { left_ = right_ = parent_ = nullptr; }
   // конструктор с параметрами
@@ -92,10 +93,13 @@ class TreeIterator {
   using iterator_category = std::bidirectional_iterator_tag;  // хз зачем
   using node_pointer = TreeNode<Data>*;
   using value_type = Data;
-  // дружественный класс ноды
-  // friend class TreeNode<Data>;
-  node_pointer ptr_;
 
+ protected:
+  node_pointer ptr_;
+  // дружественный класс ноды
+  friend class TreeNode<Data>;
+
+ public:
   TreeIterator() { ptr_ = nullptr; };
   TreeIterator(node_pointer ptr) { ptr_ = ptr; };
   TreeIterator(const TreeIterator& other) { *this = other; }
@@ -151,7 +155,7 @@ struct Compare {
 
 template <typename Key, typename Value>
 class Map {
- protected:
+ public:
   using key_type = Key;
   using mapped_type = Value;
   using value_type = std::pair<key_type, mapped_type>;
@@ -161,17 +165,18 @@ class Map {
   using const_reference = const value_type&;
   using iterator = TreeIterator<value_type>;
   using const_iterator = TreeIterator<value_type, 1>;
+
+ protected:
   using map_compare =
       Compare<key_type, mapped_type>;  // как функтор для сравнения пар
 
   node* root_;
   node* fakeNode;  // нода, на которую будет указывать end
   size_type size_ = 0;
+  friend class TreeNode<value_type>;
+  friend class TreeIterator<value_type>;
 
  public:
-  // friend class TreeNode<value_type>;
-  // friend class TreeIterator<value_type>;
-
   Map() {
     fakeNode = new node();  // скобки для вызова дефолтного конструктора
     root_ = new node();
@@ -188,28 +193,6 @@ class Map {
     if (other.size_ > 0) {
       copyRecursive(root_, fakeNode, other.root_, other.fakeNode);
       size_ = other.size_;
-    }
-  }
-
-  void copyRecursive(node* root, node* root_fake, node* other,
-                     node* other_fake) {
-    root->data_ = other->data_;
-    if (other->left_ != nullptr) {
-      node* temp = new node();
-      temp->parent_ = root;
-      root->left_ = temp;
-      copyRecursive(temp, root_fake, other->left_, other_fake);
-    }
-    if (other->right_ != nullptr) {
-      if (other->right_ == other_fake) {
-        root->right_ = root_fake;
-        root_fake->parent_ = root;
-      } else {
-        node* temp = new node();
-        temp->parent_ = root;
-        root->right_ = temp;
-        copyRecursive(temp, root_fake, other->right_, other_fake);
-      }
     }
   }
 
@@ -238,14 +221,6 @@ class Map {
     if (root_) delete root_;
   }
 
-  void clearRecursive(node* root) {
-    if (root) {
-      if (root->left_) clearRecursive(root->left_);
-      if (root->right_) clearRecursive(root->right_);
-      delete root;
-    }
-  }
-
   // оператор присваивания перемещением
   void operator=(Map&& other) {
     if (this == &other) return;
@@ -267,17 +242,6 @@ class Map {
       throw std::out_of_range("There is no such key");
     }
     return res->data_.second;
-  }
-
-  node* findNode(const key_type& key, node* root) {
-    if (size_ == 0 || root == 0 || root == fakeNode) {
-      return nullptr;
-    }
-    if (root->data_.first == key) {
-      return root;
-    }
-    return (root->data_.first > key) ? findNode(key, root->left_)
-                                     : findNode(key, root->right_);
   }
 
   // присваивает если ключ не найден
@@ -321,9 +285,8 @@ class Map {
            (sizeof(value_type) + 3 * sizeof(node*) + 8 * sizeof(bool)) / 2;
   }
 
-  // inserts node and returns iterator to where the element is in the container
-  // and bool denoting whether the insertion took place
-  std::pair<iterator, bool> insert(const value_type& value) {  // ok
+  // bool показывает произошла ли вставка
+  std::pair<iterator, bool> insert(const value_type& value) {
     if (empty()) {
       root_->data_ = value;
       ++size_;
@@ -341,27 +304,6 @@ class Map {
       ++size_;
       iterator res(temp);
       return std::pair<iterator, bool>(res, true);
-    }
-  }
-
-  void insertRecursive(node* root, node* parent, node* val, bool right) {
-    if (!root || root == fakeNode) {
-      if (root == fakeNode) {
-        parent->right_ = fakeNode->parent_ = val;
-        val->right_ = fakeNode;
-        val->parent_ = parent;
-      } else {
-        val->parent_ = parent;
-        if (right) {
-          parent->right_ = val;
-        } else {
-          parent->left_ = val;
-        }
-      }
-    } else if (map_compare(val->data_) > root->data_) {
-      insertRecursive(root->right_, root, val, 1);
-    } else {
-      insertRecursive(root->left_, root, val, 0);
     }
   }
 
@@ -396,6 +338,89 @@ class Map {
       deleteBothChildren(pos);
     }
     --size_;
+  }
+
+  void swap(Map& other) {
+    Map temp = other;
+    other = *this;
+    *this = temp;
+  }
+
+  void merge(Map& other) {
+    for (iterator it = begin(); it != end(); ++it) {
+      insertForMerge(it.getPtr());
+    }
+    other.root_ = nullptr;
+    other.size_ = 0;
+    delete other.fakeNode;
+  }
+
+  bool contains(const key_type& key) {
+    node* res = findNode(key, root_);
+    return (res) ? 1 : 0;
+  }
+
+ protected:
+  void copyRecursive(node* root, node* root_fake, node* other,
+                     node* other_fake) {
+    root->data_ = other->data_;
+    if (other->left_ != nullptr) {
+      node* temp = new node();
+      temp->parent_ = root;
+      root->left_ = temp;
+      copyRecursive(temp, root_fake, other->left_, other_fake);
+    }
+    if (other->right_ != nullptr) {
+      if (other->right_ == other_fake) {
+        root->right_ = root_fake;
+        root_fake->parent_ = root;
+      } else {
+        node* temp = new node();
+        temp->parent_ = root;
+        root->right_ = temp;
+        copyRecursive(temp, root_fake, other->right_, other_fake);
+      }
+    }
+  }
+
+  void clearRecursive(node* root) {
+    if (root) {
+      if (root->left_) clearRecursive(root->left_);
+      if (root->right_) clearRecursive(root->right_);
+      delete root;
+    }
+  }
+
+  node* findNode(const key_type& key, node* root) {
+    if (size_ == 0 || root == 0 || root == fakeNode) {
+      return nullptr;
+    }
+    if (root->data_.first == key) {
+      return root;
+    }
+    return (root->data_.first > key) ? findNode(key, root->left_)
+                                     : findNode(key, root->right_);
+  }
+
+  void insertRecursive(node* root, node* parent, node* val, bool right) {
+    if (!root || root == fakeNode) {
+      if (root == fakeNode) {
+        parent->right_ = fakeNode->parent_ = val;
+        val->right_ = fakeNode;
+        val->parent_ = parent;
+      } else {
+        val->parent_ = parent;
+        if (right) {
+          parent->right_ = val;
+        } else {
+          parent->left_ = val;
+        }
+      }
+    } else if (map_compare(val->data_) > root->data_) {
+      insertRecursive(root->right_, root, val, 1);
+    } else {
+      insertRecursive(root->left_, root, val, 0);
+    }
   }
 
   void deleteBothChildren(iterator pos) {
@@ -471,21 +496,6 @@ class Map {
     }
   }
 
-  void swap(Map& other) {
-    Map temp = other;
-    other = *this;
-    *this = temp;
-  }
-
-  void merge(Map& other) {
-    for (iterator it = begin(); it != end(); ++it) {
-      insertForMerge(it.getPtr());
-    }
-    other.root_ = nullptr;
-    other.size_ = 0;
-    delete other.fakeNode;
-  }
-
   void insertForMerge(node* val) {
     if (empty()) {
       root_->data_ = val->data_;
@@ -502,11 +512,6 @@ class Map {
       insertRecursive(root_, 0, val, 0);
       ++size_;
     }
-  }
-
-  bool contains(const key_type& key) {
-    node* res = findNode(key, root_);
-    return (res) ? 1 : 0;
   }
 };
 }  // namespace s21
