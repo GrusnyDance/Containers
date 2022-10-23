@@ -76,7 +76,7 @@ class TreeNode {
     return temp;
   }
 
-  TreeNode* getMinRight() {
+  TreeNode* getMin() {
     TreeNode* temp = this;
     while (temp->left_) {
       temp = temp->left_;
@@ -298,7 +298,8 @@ class Map {
   }
 
   iterator begin() {
-    iterator result(root_);
+    node* temp = root_->getMin();
+    iterator result(temp);
     return result;
   }
   iterator end() {
@@ -306,7 +307,8 @@ class Map {
     return result;
   }
   const_iterator begin() const {
-    const_iterator result(root_);
+    node* temp = root_->getMin();
+    const_iterator result(temp);
     return result;
   }
   const_iterator end() const {
@@ -399,7 +401,7 @@ class Map {
   }
 
   void deleteBothChildren(iterator pos) {
-    node* minRight = pos->right_->getMinRight();
+    node* minRight = pos->right_->getMin();
     value_type val = minRight->data_;
     iterator recursive(minRight);
     erase(recursive);
@@ -488,7 +490,7 @@ class Map {
 
   void insertForMerge(node* val) {
     if (empty()) {
-      root_->data_ = val.data_;
+      root_->data_ = val->data_;
       ++size_;
       delete val;
     } else {

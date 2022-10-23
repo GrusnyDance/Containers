@@ -25,8 +25,8 @@ int main() {
   pair<int, string> e(-10, "princess");
   pair<int, string> f(1234, "floppa");
   pair<int, string> g(12, "steppa");
-  pair<int, string> h(34, "juice");
-  pair<int, string> j(55, "hurricane");
+  pair<int, string> h(2, "juice");
+  pair<int, string> j(6, "hurricane");
 
   // test.insert(a);
   // test.insert(b);
@@ -42,24 +42,29 @@ int main() {
   myMap.insert(g);
   myMap.insert(h);
   myMap.insert(j);
+  auto it = myMap.begin();
 
-  test.insert(c);
-  test.insert(d);
-  test.insert(e);
-  test.insert(f);
-  test.insert(g);
-  test.insert(h);
-  test.insert(j);
+  // myMap.erase(++it);
+
+  // test.insert(c);
+  // test.insert(d);
+  // test.insert(e);
+  // test.insert(f);
+  // test.insert(g);
+  // test.insert(h);
+  // test.insert(j);
+    cout << myMap.size() << endl;
 
   for (auto it = myMap.begin(); it != myMap.end(); ++it) {
-    cout << (*it).first << endl;
+    myMap.erase(it);
+    cout << myMap.size() << endl;
   }
 
-  cout << endl << endl;
+  // cout << myMap.root_->data_.first << endl;
 
-  for (auto it = test.begin(); it != test.end(); ++it) {
-    cout << (*it).first << endl;
-  }
+  // for (auto it = test.begin(); it != test.end(); ++it) {
+  //   cout << (*it).first << endl;
+  // }
 
   // auto it = myMap.begin();
   // ++it;
