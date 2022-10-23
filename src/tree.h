@@ -30,6 +30,9 @@ struct STree {
 template<class K, bool MULTI>
 class Iterator;
 
+template<class K, bool MULTI>
+class ConstIterator;
+
 template<class K, bool MULTI, class Compare = std::less<K>>
 class Tree {  
   public:
@@ -41,37 +44,44 @@ class Tree {
     using node = STree<K>*;
     using compare = Compare;
     using iterator = Iterator<K, MULTI>;
+    using const_iterator = ConstIterator<K, MULTI>;
 
   private:
-    STree<K> *first_;
-    STree<K> *root_;
-    STree<K> *last_;
-    size_type size_;
-    Compare comp_;
+    STree<K> *first_; // min
+    STree<K> *root_; // korenb
+    STree<K> *fake_; // zaglushka
+    size_type size_; // kol-vo elementov
+    Compare comp_; // val1 < val2
   
   public:
 
-    Tree() : first_(nullptr), root_(nullptr), last_(nullptr),
+    Tree() : first_(nullptr), root_(nullptr),
         size_(0), comp_(Compare()) {
+        fake_ = new STree<K>();
     }
 
     Tree(std::initializer_list<key_type> const &keys) : first_(nullptr),
-        root_(nullptr), last_(nullptr), size_(0), comp_(Compare()) {
+        root_(nullptr), size_(0), comp_(Compare()) {
+      fake_ = new STree<K>();
       operator=(keys);
     }
 
-    Tree(const Tree &other) : first_(other.first_), last_(nullptr),
-        root_(other.root_), size_(other.size_) {
+    Tree(const Tree &other) {
+        fake_ = new STree<K>();
+        *this = other;
     }
 
-    Tree(Tree&& other) : root_(other.root_), first_(other.first_),
-        size_(other.size_), last_(nullptr) {
+    // I dont know, what the f**k =)
+    Tree(Tree&& other) : first_(other.first_), root_(other.root_), size_(other.size_) {
+      fake_ = new STree<K>();
       other.root_ = nullptr;
-      other.front_ = nullptr;
+      other.first_ = nullptr;
       other.size_ = 0;
     }
 
-    ~Tree() {}
+    ~Tree() {
+      delete fake_;
+    }
 
     Tree& operator=(std::initializer_list<value_type> const& keys) {
       if (root_ != nullptr) {
@@ -88,7 +98,7 @@ class Tree {
     
     void operator=(const Tree &other) {
       this->first_ = other.first_;
-      this->last_ = nullptr;
+      this->fake_ = nullptr;
       this->root_ = other.root_;
       this->size_ = other.size_;
     }
@@ -103,7 +113,7 @@ class Tree {
       root_ = other.root_;
       first_ = other.first_;
       size_ = other.size_;
-      last_ = nullptr;
+      fake_ = nullptr;
       other.root_ = nullptr;
       other.first_ = nullptr;
       other.size_ = 0;
@@ -112,12 +122,72 @@ class Tree {
 
     node getFirst() { return first_; }
     node getRoot() { return root_; }
-    node getLast() { return last_; }
+    node getLast() { return fake_; }
 
     void clear() {
       this->size_ = 0;
       clearRecurs(root_);
-      root_ = first_ = last_ = nullptr;
+      root_ = first_ = nullptr;
+    }
+    
+    iterator begin() {
+      iterator it(first_);
+      return it;
+    }
+
+    const_iterator begin() const {
+      const_iterator it(first_);
+      return it;
+    }
+
+    iterator end() {
+      // obrashenie = (sega)
+      iterator it(fake_);
+      return it;
+    }
+
+    const_iterator end() const {
+      // obrashenie = (sega)
+      const_iterator it(fake_);
+      return it;
+    }
+
+    void erase(iterator pos) {
+      if (root_ != nullptr || search(pos.ptr_->data_) != nullptr) {
+        removeRecurs(this->root_, pos.ptr_->data_);
+        size_--;
+        // minimum(root_);
+        // maximum(root_);
+      }
+    }
+
+    void swap(Tree<K, MULTI> &other) {
+      Tree<K, MULTI> temp = other;
+      other = *this;
+      *this = temp;
+    }
+
+    // ne robit
+    void merge(Tree<K, MULTI> &other) {
+      iterator it = other.begin();
+      while (it != other.end()) {
+        this->pasteNode(other.getFirst()->data_);
+        it++;
+      }
+      other.clear();
+    }
+
+    bool empty() const {
+      return size_ == 0 ? true : false;
+    }
+
+    size_type size() const {
+      return size_;
+    }
+
+    size_type max_size() const {
+      std::allocator<key_type> alloc;
+      return alloc.max_size() / 10;
     }
 
     iterator find(const key_type &key) {
@@ -129,69 +199,9 @@ class Tree {
         return end();
       }
     }
-    
-    iterator begin() {
-      iterator it(first_);
-      return it;
-    }
 
-    iterator begin() const {
-      iterator it(first_);
-      return it;
-    }
-
-    iterator end() {
-      // obrashenie = (sega)
-      iterator it(last_);
-      return it;
-    }
-
-    iterator end() const {
-      // obrashenie = (sega)
-      iterator it(last_);
-      return it;
-    }
-
-    bool erase(const key_type key) {
-      bool result = false;
-      if (root_ == nullptr || search(key) == nullptr) {
-        return false;
-      } else {
-        removeRecurs(this->root_, key);
-        size_--;
-        minimum(root_);
-        maximum(root_);
-        return true;
-      }
-      return result;
-    }
-
-    void swap(node & other) {
-      Tree<K, MULTI> temp = other;
-      other = *this;
-      *this = temp;
-    }
-
-    void merge(node& other) {
-      iterator it = other.begin();
-      while (it != other.end()) {
-        this->pasteNode(other->data_);
-        it++;
-      }
-      other.clear();
-    }
-
-    bool empty() const {
-      return root_ == nullptr ? true : false;
-    }
-
-    size_type size() const {
-      return size_;
-    }
-
-    size_type max_size() const {
-      std::allocator<key_type> alloc;
-      return alloc.max_size() / 10;
+    bool contains(const key_type& key) const {
+      return (search(key) ? true : false);
     }
 
     void printSorted(node root) {
@@ -204,8 +214,7 @@ class Tree {
 
   // help func
   protected:
-
-    node minimum(node root) {
+    node minimum(node root) const {
       if (root == nullptr) {
         return root;
         
@@ -217,7 +226,7 @@ class Tree {
       return minimum(root->left_);
     }
 
-    node maximum(node root) {
+    node maximum(node root) const {
       if (root == nullptr) {
         return root;
       }
@@ -254,22 +263,22 @@ class Tree {
 
     void pasteNewNode(node &root, node new_node) {
       node tmp_parent = root;
-      node last_parent = nullptr;
+      node fake_parent = nullptr;
 
       while (tmp_parent != nullptr) {
-        last_parent = tmp_parent;
+        fake_parent = tmp_parent;
         if (comp_(new_node->data_, tmp_parent->data_)) { // new node < parent node
           tmp_parent = tmp_parent->left_; // move left
         } else {
           tmp_parent = tmp_parent->right_; // move right
         }
       }
-      new_node->parent_ = last_parent;
+      new_node->parent_ = fake_parent;
       if (new_node->parent_ != nullptr) {
-        if (new_node->data_ < last_parent->data_) {
-          last_parent->left_ = new_node; // insert new node left
+        if (new_node->data_ < fake_parent->data_) {
+          fake_parent->left_ = new_node; // insert new node left
         } else {
-          last_parent->right_ = new_node; // insert new node right
+          fake_parent->right_ = new_node; // insert new node right
         }
       } else {
         root_ = new_node; // new node == head tree
@@ -359,7 +368,7 @@ class Iterator {
 
     node* operator->() const { return ptr_; }
 
-    const_reference operator*() const {
+    reference operator*() const {
       return ptr_->data_;
     }
 
@@ -394,29 +403,29 @@ class Iterator {
           ptr_ = nullptr;
         }
       }
-    return *this;
+      return *this;
     }
 
-  Iterator &operator--() {
+    Iterator &operator--() {
       if (ptr_->left_ != nullptr) {
-      ptr_ = ptr_->left_;
-      while (ptr_->right_ != nullptr) {
-        ptr_ = ptr_->right_;
-      }
-    } else {
-      node temp = ptr_->parent_;
-      while (ptr_ == temp->left_ && temp->parent_ != nullptr) {
-        ptr_ = temp;
-        temp = temp->parent_;
-      }
-      if (ptr_ == temp->right_) {
-        ptr_ = temp;
+        ptr_ = ptr_->left_;
+        while (ptr_->right_ != nullptr) {
+          ptr_ = ptr_->right_;
+        }
       } else {
-        ptr_ = nullptr;
+        node temp = ptr_->parent_;
+        while (ptr_ == temp->left_ && temp->parent_ != nullptr) {
+          ptr_ = temp;
+          temp = temp->parent_;
+        }
+        if (ptr_ == temp->right_) {
+          ptr_ = temp;
+        } else {
+          ptr_ = nullptr;
+        }
       }
+      return *this;
     }
-    return *this;
-  }
 
     Iterator operator++(int) {
       Iterator tmp = *this;
@@ -430,7 +439,106 @@ class Iterator {
       return tmp;
     }
 
-    node getPtr() { return this->ptr_; }
+    node getPtr() const { return this->ptr_; }
+};
+
+template<class K, bool MULTI>
+class ConstIterator {
+  public:
+    using key_type = K;
+    using value_type = K;
+    using reference = K&;
+    using const_reference = const K&;
+    using size_type = size_t;
+    using node = STree<K>*;
+    friend class Tree<K, MULTI>;
+
+  protected:
+    node ptr_;
+
+  public:
+    ConstIterator() : ptr_(nullptr) {}
+    
+    ConstIterator(node ptr) : ptr_(ptr){}
+    
+    ConstIterator(const ConstIterator &other) : ptr_(other.ptr_) {}
+
+    ~ConstIterator() {}
+
+    node* operator->() const { return ptr_; }
+    
+    const_reference operator*() const {
+      return ptr_->data_;
+    }
+
+    bool operator!=(const ConstIterator &other) {
+      return this->ptr_ != other.ptr_;
+    }
+
+    bool operator==(const ConstIterator &other) {
+      return this->ptr_ == other.ptr_;
+    }
+
+    ConstIterator& operator=(const ConstIterator other) {
+        this->ptr_ = other.ptr_;
+        return *this;
+    }
+
+    ConstIterator &operator++() {
+      if (ptr_->right_ != nullptr) {
+        ptr_ = ptr_->right_;
+        while (ptr_->left_ != nullptr) {
+          ptr_ = ptr_->left_;
+        }
+      } else {
+        node temp = ptr_->parent_;
+        while (ptr_ == temp->right_ && temp->parent_ != nullptr) {
+          ptr_ = temp;
+          temp = temp->parent_;
+        }
+        if (ptr_ == temp->left_) {
+          ptr_ = temp;
+        } else {
+          ptr_ = nullptr;
+        }
+      }
+    return *this;
+    }
+
+    ConstIterator &operator--() {
+        if (ptr_->left_ != nullptr) {
+        ptr_ = ptr_->left_;
+        while (ptr_->right_ != nullptr) {
+          ptr_ = ptr_->right_;
+        }
+      } else {
+        node temp = ptr_->parent_;
+        while (ptr_ == temp->left_ && temp->parent_ != nullptr) {
+          ptr_ = temp;
+          temp = temp->parent_;
+        }
+        if (ptr_ == temp->right_) {
+          ptr_ = temp;
+        } else {
+          ptr_ = nullptr;
+        }
+      }
+      return *this;
+    }
+
+    ConstIterator operator++(int) {
+      ConstIterator tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    ConstIterator operator--(int) {
+      ConstIterator tmp = *this;
+      --(*this);
+      return tmp;
+    }
+
+    node getPtr() const { return this->ptr_; }
 };
 
 } // namespase s21

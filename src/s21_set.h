@@ -27,14 +27,6 @@ class set : public Tree<K, false> {
       this->maximum(this->getRoot());
       return result;
     }
-
-    bool contains(const key_type& key) {
-      int res = 0;
-      if (this->search(key)) {
-        res = 1;
-      }
-      return res;
-    }
 };
 
 }
