@@ -8,13 +8,11 @@ namespace s21 {
 // принимает пару
 template <typename Data>
 class TreeNode {
- protected:
+ public:
   Data data_;
   TreeNode* left_;
   TreeNode* right_;
   TreeNode* parent_;
-
- public:
   // конструктор без параметров
   TreeNode() { left_ = right_ = parent_ = nullptr; }
   // конструктор с параметрами
@@ -94,12 +92,10 @@ class TreeIterator {
   using node_pointer = TreeNode<Data>*;
   using value_type = Data;
 
- protected:
   node_pointer ptr_;
   // дружественный класс ноды
   friend class TreeNode<Data>;
 
- public:
   TreeIterator() { ptr_ = nullptr; };
   TreeIterator(node_pointer ptr) { ptr_ = ptr; };
   TreeIterator(const TreeIterator& other) { *this = other; }
@@ -166,7 +162,7 @@ class Map {
   using iterator = TreeIterator<value_type>;
   using const_iterator = TreeIterator<value_type, 1>;
 
- protected:
+ private:
   using map_compare =
       Compare<key_type, mapped_type>;  // как функтор для сравнения пар
 
@@ -360,7 +356,7 @@ class Map {
     return (res) ? 1 : 0;
   }
 
- protected:
+ private:
   void copyRecursive(node* root, node* root_fake, node* other,
                      node* other_fake) {
     root->data_ = other->data_;
