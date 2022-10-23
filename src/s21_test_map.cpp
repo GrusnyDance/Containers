@@ -23,24 +23,55 @@ int main() {
   pair<int, string> c(-1, "lalala");
   pair<int, string> d(10, "hahaha");
   pair<int, string> e(-10, "princess");
+  pair<int, string> f(1234, "floppa");
+  pair<int, string> g(12, "steppa");
+  pair<int, string> h(34, "juice");
+  pair<int, string> j(55, "hurricane");
 
   // test.insert(a);
   // test.insert(b);
-  test.insert(c);
-  test.insert(d);
+  // test.insert(c);
+  // cout << "my map   " << myMap.size() << endl;
+  // test.insert(d);
   // myMap.insert(a);
   // myMap.insert(b);
   myMap.insert(c);
   myMap.insert(d);
-  // myMap.insert(e);
+  myMap.insert(e);
+  myMap.insert(f);
+  myMap.insert(g);
+  myMap.insert(h);
+  myMap.insert(j);
 
-  // cout << "my map   " << myMap.at(50) << endl;
+  test.insert(c);
+  test.insert(d);
+  test.insert(e);
+  test.insert(f);
+  test.insert(g);
+  test.insert(h);
+  test.insert(j);
+
+  for (auto it = myMap.begin(); it != myMap.end(); ++it) {
+    cout << (*it).first << endl;
+  }
+
+  cout << endl << endl;
+
+  for (auto it = test.begin(); it != test.end(); ++it) {
+    cout << (*it).first << endl;
+  }
+
+  // auto it = myMap.begin();
+  // ++it;
+  // myMap.erase(it);
+
+  // cout << "my map   " << myMap.at(-10) << endl;
   // cout << "my map   " << myMap.at(7) << endl;
   // cout << "my map   " << myMap.at(-1) << endl;
   // cout << "my map   " << myMap.at(10) << endl;
   // cout << "my map   " << myMap.at(-10) << endl;
-  cout << "my map   " << myMap[12] << endl;
-  cout << "orig map " << test[234] << endl;
+  // cout << "my map   " << myMap[12] << endl;
+  // cout << "orig map " << test[234] << endl;
   // myMap.clear();
   // cout << "my map   " << myMap.size() << endl;
 

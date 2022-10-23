@@ -48,7 +48,7 @@ class TreeNode {
     if (temp->right_) {
       temp = temp->right_;
       while (temp->left_) temp = temp->left_;
-    } else if (temp->parent) {
+    } else if (temp->parent_) {
       // если значение крайнее правое в левой ветке, следующее по величине
       // значение - корень
       while (temp->parent_ && temp->parent_->right_ == temp) {
@@ -68,15 +68,16 @@ class TreeNode {
       while (temp->right_) temp = temp->right_;
     } else if (temp->parent_) {
       // если значение крайнее левое в правой ветке
-      while (temp->parent_&& temp->parent->left_ = temp) {
+      while (temp->parent_ && (temp->parent_->left_ == temp)) {
         temp = temp->parent_;
       }
       temp = temp->parent_;
     }
+    return temp;
   }
 
-  TreeNode* getMinRight(TreeNode* current) {
-    TreeNode* temp = current.getPtr();
+  TreeNode* getMinRight() {
+    TreeNode* temp = this;
     while (temp->left_) {
       temp = temp->left_;
     }
@@ -119,12 +120,12 @@ class TreeIterator {
   }
 
   TreeIterator& operator++() {
-    ptr_ = ptr_->next();
+    ptr_ = ptr_->nextNode();
     return *this;
   }
 
   TreeIterator& operator--() {
-    ptr_ = ptr_->prev();
+    ptr_ = ptr_->previousNode();
     return *this;
   }
 
@@ -398,7 +399,7 @@ class Map {
   }
 
   void deleteBothChildren(iterator pos) {
-    node* minRight = getMinRight(pos->right_);
+    node* minRight = pos->right_->getMinRight();
     value_type val = minRight->data_;
     iterator recursive(minRight);
     erase(recursive);
@@ -417,7 +418,7 @@ class Map {
       } else {
         parent->left_ = pos->right_;
       }
-      pos->right_->parent = parent;
+      pos->right_->parent_ = parent.getPtr();
       delete pos.getPtr();
     }
   }
@@ -458,7 +459,7 @@ class Map {
       size_ = 1;
     } else if (pos->right_ == fakeNode) {
       fakeNode->parent_ = pos->parent_;
-      pos->parent->right_ = fakeNode;
+      pos->parent_->right_ = fakeNode;
       delete pos.getPtr();
     } else {
       if (map_compare(*pos) > pos->parent_->data_) {
