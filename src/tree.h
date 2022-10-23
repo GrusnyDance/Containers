@@ -92,6 +92,7 @@ class Tree {
       for (auto i : keys) {
         this->pasteNode(i);
       }
+      minimum(root_);
       maximum(root_);
       return *this;
     }
@@ -214,7 +215,7 @@ class Tree {
 
   // help func
   protected:
-    node minimum(node root) const {
+    node minimum(node root) {
       if (root == nullptr) {
         return root;
         
@@ -226,7 +227,7 @@ class Tree {
       return minimum(root->left_);
     }
 
-    node maximum(node root) const {
+    node maximum(node root) {
       if (root == nullptr) {
         return root;
       }
