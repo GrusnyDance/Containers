@@ -18,6 +18,7 @@ int main() {
 
   map<int, string> test;
   s21::Map<int, string> myMap;
+  s21::Map<int, string> myMap2;
   pair<int, int> a(3, 100);
   pair<int, int> b(7, 200);
   pair<int, string> c(-1, "lalala");
@@ -42,8 +43,12 @@ int main() {
   myMap.insert(g);
   myMap.insert(h);
   myMap.insert(j);
-  auto it = myMap.begin();
 
+  myMap2.insert(c);
+  myMap2.insert(f);
+  myMap2.insert(g);
+
+  s21::Map<int, string> lala(myMap2);
   // myMap.erase(++it);
 
   // test.insert(c);
@@ -53,7 +58,7 @@ int main() {
   // test.insert(g);
   // test.insert(h);
   // test.insert(j);
-    cout << myMap.size() << endl;
+  // cout << myMap.size() << endl;
 
   for (auto it = myMap.begin(); it != myMap.end(); ++it) {
     myMap.erase(it);

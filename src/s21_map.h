@@ -1,8 +1,8 @@
-#include <iostream>
-#include <limits>
+#include <iostream>  // DEBUG
+#include <limits>    // max_size
 #include <string>
 #include <type_traits>
-#include <utility>  // initializer list
+#include <utility>  // initializer list, pair
 
 namespace s21 {
 // принимает пару
@@ -85,16 +85,15 @@ class TreeNode {
   }
 };
 
-// принимает пару, определяет как сравниваются ноды?? посмотреть как работает
-// less который вызывается в оригинале
+// принимает пару
 template <typename Data, bool isConst = 0>
 class TreeIterator {
  public:
-  using iterator_category = std::bidirectional_iterator_tag;
+  using iterator_category = std::bidirectional_iterator_tag;  // хз зачем
   using node_pointer = TreeNode<Data>*;
   using value_type = Data;
   // дружественный класс ноды
-  friend class TreeNode<Data>;
+  // friend class TreeNode<Data>;
   node_pointer ptr_;
 
   TreeIterator() { ptr_ = nullptr; };
@@ -170,10 +169,10 @@ class Map {
   size_type size_ = 0;
 
  public:
-  friend class TreeNode<value_type>;
-  friend class TreeIterator<value_type>;
+  // friend class TreeNode<value_type>;
+  // friend class TreeIterator<value_type>;
 
-  Map() {                   // ok
+  Map() {
     fakeNode = new node();  // скобки для вызова дефолтного конструктора
     root_ = new node();
     root_->right_ = fakeNode;
@@ -199,7 +198,7 @@ class Map {
       node* temp = new node();
       temp->parent_ = root;
       root->left_ = temp;
-      MapCopy(temp, root_fake, other->left_, other_fake);
+      copyRecursive(temp, root_fake, other->left_, other_fake);
     }
     if (other->right_ != nullptr) {
       if (other->right_ == other_fake) {
@@ -209,7 +208,7 @@ class Map {
         node* temp = new node();
         temp->parent_ = root;
         root->right_ = temp;
-        MapCopy(temp, root_fake, other->right_, other_fake);
+        copyRecursive(temp, root_fake, other->right_, other_fake);
       }
     }
   }
@@ -273,7 +272,6 @@ class Map {
   node* findNode(const key_type& key, node* root) {
     if (size_ == 0 || root == 0 || root == fakeNode) {
       return nullptr;
-      std::cout << "DEBUG 275" << std::endl;
     }
     if (root->data_.first == key) {
       return root;
