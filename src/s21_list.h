@@ -6,7 +6,13 @@
 
 #include "s21_sort.h"
 
+#define R_PREV 1
+#define R_NEXT 0
+
 namespace s21 {
+
+template <class T>
+class list;
 
 template <class T>
 struct Node {
@@ -25,18 +31,6 @@ struct Node {
         next->prev = add;
         next = add;
     }
-    Node<T> *addPrev(const T value_) {
-        Node *add = new Node;
-        add->value = value_;
-        addPrev(add);
-        return add;
-    }
-    Node<T> *addNext(const T value_) {
-        Node *add = new Node;
-        add->value = value_;
-        addNext(add);
-        return add;
-    }
     Node<T> *pop() {  // return next
         Node<T> *ret = next;
         prev->next = next;
@@ -47,16 +41,12 @@ struct Node {
 };
 
 template <class T>
-class list;
-
-template <class T>
 class ListConstIterator;
 
 template <class T>
 class ListIterator {
     private:
         friend class list<T>;
-        friend class ListConstIterator<T>;
         Node<T> *ptr = nullptr;
     public:
         T& operator*() { return ptr->value; }
@@ -88,43 +78,10 @@ class ListIterator {
 };
 
 template <class T>
-class ListConstIterator {
-    private:
-        friend class list<T>;
-        Node<T> *ptr = nullptr;
+class ListConstIterator: public ListIterator<T> {
     public:
-        const T& operator*() { return ptr->value; }
-        ListConstIterator operator++(int) {
-            ptr = ptr->next;
-            return *this;
-        }
-        ListConstIterator operator--(int) {
-            ptr = ptr->prev;
-            return *this;
-        }
-        ListConstIterator& operator++() {
-            ptr = ptr->next;
-            return *this;
-        }
-        ListConstIterator& operator--() {
-            ptr = ptr->prev;
-            return *this;
-        }
-        bool operator!=(ListConstIterator<T> other) {
-            if (ptr == other.ptr) return false;
-            return true;
-        }
-        bool operator==(ListConstIterator<T> other) {
-            if (ptr == other.ptr) return true;
-            return false;
-        }
-        ListConstIterator(Node<T> *node) : ptr(node) {}
-        ListConstIterator(ListIterator<T> other) : ptr(other.ptr) {}
-        ListConstIterator &operator=(ListIterator<T> other) {
-            ptr = other.ptr;
-            return this;
-        }
-
+        const T& operator*() { return ListIterator<T>::operator*(); }
+        ListConstIterator(ListIterator<T> other) : ListIterator<T>(other) {}
 };
 
 template <class T>
@@ -138,191 +95,123 @@ class list {
         using size_type = std::size_t;
         using node = Node<T>;
     private:
-        node *head = nullptr; // front
-        node *root = nullptr; // back
-        node *fake = nullptr;
+        node *head = nullptr;  // front begin
+        node *root = nullptr;  // back
+        node *fake = nullptr;  // end
         size_type size_ = 0;
+        node *addNode(node *base, const T *value, bool route) {
+            node *add = new node;
+            if (value != nullptr) add->value = *value;
+            route ? base->addPrev(add) : base->addNext(add);
+            rootHead();
+            size_++;
+            return add;
+        }
+        node *pop(node *waste) {  // return next
+            if (empty()) return waste;
+            node *ret = waste->pop();
+            size_--;
+            rootHead();
+            return ret;
+        }
         void closedFake() {
             fake->next = fake;
             fake->prev = fake;
             head = fake;
             root = fake;
+            size_ = 0;
         }
         void fakeAllocate() {
             fake = new node;
             closedFake();
         }
+        void rootHead() {
+            head = fake->next;
+            root = fake->prev;
+        }
         template<class sw>
-        void swap(sw *a, sw *b) {        // template<class... Args>
-        // iterator emplace(const_iterator pos, Args&&... args) {
-
-        // }
+        void swap(sw *a, sw *b) {
             sw buff = *a;
             *a = *b;
             *b = buff;
         }
-    public:
-        list() : size_(0) {
-            fakeAllocate();
-        }
-        list(size_type n) : size_(n) {
-            fakeAllocate();
-            node *prev_ = fake;
-            for (int k = 0; k < n; k++) {
-                node *add = new node;
-                prev_->next = add;
-                add->prev = prev_;
-                prev_ = add;
-                if (k == 0) head = add;
-                if (k == n - 1) {
-                    root = add;
-                    root->next = fake;
-                }
-            }
-        }
-        list(std::initializer_list<value_type> const &items) {
-            fakeAllocate();
-            for (const auto &add : items) push_back(add);
-            head = fake->next;
-            root = fake->prev;
-        }
-        list(const list<value_type> &l) : size_(l.size_) {  // copy
-            fakeAllocate();
-            node *copy = l.head;
-            node *prev_ = fake;
-            for (size_type k = 0; k < size_; k++) {
-                node *add = prev_->addNext(copy->value);
-                if (k == 0) head = add;
-                if (k == size_ - 1) root = add;
-                prev_ = add;
-                copy = copy->next;
-            }
-        }
-        list &operator=(list<value_type> &&l) noexcept {  // move
-            fake = l.fake;
-            head = l.head;
-            root = l.root;
-            l.fakeAllocate();
-            size_ = l.size_;
-            l.size_ = 0;
-            return *this;
-        }
-        list(list<value_type> &&l) {  // move
-            fake = l.fake;
-            head = l.head;
-            root = l.root;
-            l.fakeAllocate();
-            size_ = l.size_;
-            l.size_ = 0;
-        }
-        ~list() {
+        void del() {  // does not remove the fake node
             while (head != fake) {
                 node *del = head;
                 head = head->next;
                 delete del;
             }
+        }
+    public:
+        list() : size_(0) { fakeAllocate(); }
+        list(size_type n) {
+            fakeAllocate();
+            for (int k = 0; k < n; k++) addNode(fake, nullptr, R_PREV);
+        }
+        list(std::initializer_list<value_type> const &items) {
+            fakeAllocate();
+            for (const auto &add : items) push_back(add);
+        }
+        list(const list<value_type> &l) {  // copy
+            fakeAllocate();
+            for (auto i : l) addNode(fake, &i, R_PREV);
+        }
+        list(list<value_type> &&l) : fake(l.fake), head(l.head), root(l.root), size_(l.size_) {  // move
+            l.fakeAllocate();
+        }
+        list &operator=(list<value_type> &&l) {  // move
+            del();
+            delete fake;
+            fake = l.fake;
+            rootHead();
+            size_ = l.size_;
+            l.fakeAllocate();
+            return *this;
+        }
+        ~list() {
+            del();
             delete fake;
         }
         list &operator=(const list<value_type> &l) {  // copy
-            size_ = l.size_;
             fakeAllocate();
-            node *copy = l.head;
-            node *prev_ = fake;
-            for (size_type k = 0; k < size_; k++) {
-                node *add = prev_->addNext(copy->value);
-                if (k == 0) head = add;
-                if (k == size_ - 1) root = add;
-                prev_ = add;
-                copy = copy->next;
-            }
+            for (auto i : l) addNode(fake, &i, R_PREV);
             return *this;
         }
         bool operator==(list<value_type> other) const {
             if (size_ == other.size_) {
-                node *Tcheck = head;
-                node *Ocheck = other.head;
-                while (Tcheck != fake) {
-                    if (Tcheck->value != Ocheck->value) return false;
-                    Tcheck = Tcheck->next;
-                    Ocheck = Ocheck->next;
+                for (node *i = head, *j = other.head; i != fake; i = i->next, j = j->next) {
+                    if (i->value != j->value) return false;
                 }
                 return true;
             }
             return false;
         }
-        const_reference front() { return head->value; }
-        const_reference back() { return root->value; }
+        const_reference front() const { return head->value; }
+        const_reference back() const { return root->value; }
         iterator begin() { return iterator(head); }
-        const_iterator begin() const{ return const_iterator(head); }
+        const_iterator begin() const { return const_iterator(head); }
         iterator end() { return iterator(fake); }
         const_iterator end() const { return const_iterator(fake); }
-        bool empty() {
+        bool empty() const {
             if ((head == fake && root == fake) || size_ == 0) return true;
             return false;
         }
-        size_type size() { return size_; }
-        size_type max_size() {
+        size_type size() const { return size_; }
+        size_type max_size() const {
             return (std::numeric_limits<size_type>::max() / sizeof(node) / 2);  // include <limits>
         }
         void clear() {
-            node *del = head;
-            for (size_type k = 0; k < size_; k++) {
-                head = head->next;
-                delete del;
-                del = head;
-            }
+            del();
             closedFake();
-            size_ = 0;
         }
         iterator insert(iterator pos, const_reference value) {
-            node *add = pos.ptr->addPrev(value);
-            if (add->prev == fake) head = add;
-            if (add->next == fake) root = add;
-            size_++;
-            pos--;
-            return pos;
+            return iterator(addNode(pos.ptr, &value, R_PREV));
         }
-        iterator erase(iterator pos) {
-            // if (empty()) return;
-            if (pos.ptr == head) head = pos.ptr->next;
-            if (pos.ptr == root) root = pos.ptr->prev;
-            pos.ptr->next->prev = pos.ptr->prev;
-            pos.ptr->prev->next = pos.ptr->next;
-            iterator ret = pos.ptr->next;
-            delete pos.ptr;
-            size_--;
-            return ret;
-        }
-        void push_back(const_reference value) {
-            root = fake->addPrev(value);
-            if (fake == head) head = root;
-            size_++;
-        }
-        void pop_back() {
-            if (empty()) return;
-            if (size_ == 1) {
-                clear();
-                return;
-            }
-            root = root->pop()->prev;
-            size_--;
-            if (size_ == 1) head = root;
-        }
-        void push_front(const_reference value) {
-            head = fake->addNext(value);
-            if (fake == root) root = head;
-            size_++;
-        }
-        void pop_front() {
-            if (empty()) return;
-            if (size_ == 1) {
-                clear();
-                return;
-            }
-            head = head->pop();
-            size_--;
-            if (size_ == 1) root = head;
-        }
+        iterator erase(iterator pos) { return iterator(pop(pos.ptr)); }
+        void push_back(const_reference value) { addNode(fake, &value, R_PREV); }
+        void pop_back() { pop(root); }
+        void push_front(const_reference value) { addNode(fake, &value, R_NEXT); }
+        void pop_front() { pop(head); }
         void swap(list<T>& other) {
             swap<node*>(&head, &other.head);
             swap<node*>(&root, &other.root);
@@ -340,22 +229,18 @@ class list {
                     this_ = this_->next;
                 }
             }
-            head = fake->next;
-            root = fake->prev;
-            other.closedFake();
+            rootHead();
             size_ += other.size_;
-            other.size_ = 0;
+            other.closedFake();
         }
         void splice(const_iterator pos, list& other) {
             pos.ptr->prev->next = other.head;
             other.head->prev = pos.ptr->prev;
             pos.ptr->prev = other.root;
             other.root->next = pos.ptr;
-            if (pos.ptr == head) head = other.head;
-            if (pos.ptr == fake) root = other.root;
-            other.closedFake();
+            rootHead();
             size_ += other.size_;
-            other.size_ = 0;
+            other.closedFake();
         }
         void reverse() {
             node *this_ = head;
@@ -370,20 +255,31 @@ class list {
             while (this_ != fake) {
                 const_reference S = this_->value;
                 this_ = this_->next;
-                while (S == this_->value && this_ != fake) {
-                    this_ = this_->pop();
-                    size_--;
-                    if (this_ == fake) {
-                        root = this_->prev;
-                        break;
-                    }
-                }
+                while (this_ != fake && S == this_->value) this_ = pop(this_);
             }
         }
         void sort() {
             iterator start(head);
             iterator end(root);
             QSort<iterator, value_type>(start, end);
+        }
+        iterator emplace(iterator pos, value_type arg) { return insert(pos, arg); }
+        template<class... Args>
+        iterator emplace(const_iterator pos, value_type first, Args&&... args) {
+            return emplace(insert(pos, first)++, args...);  // return iterator(last of args)
+            // return insert(emplace(pos, args...), first);  // return iterator(first of args)
+        }
+        void emplace_back(value_type first) { push_back(first); }
+        template<class... Args>
+        void emplace_back(value_type first, Args&&... args) {
+            push_back(first);
+            emplace_back(args...);
+        }
+        void emplace_front(value_type first) { push_front(first); }
+        template<class... Args>
+        void emplace_front(value_type first, Args&&... args) {
+            push_front(first);
+            emplace_front(args...);
         }
 };
 
