@@ -20,7 +20,7 @@ class queue: private list<T> {
         queue(std::initializer_list<value_type> const &items) : List(items) {}
         queue(const queue &q) : List(q) {}
         queue(queue &&q) : List(q) {}
-        queue &operator=(queue &&q) : List(q) {}
+        queue &operator=(queue &&q) { return List(q); }
         bool operator==(queue other) const {
             return List::operator==(other);
         }
