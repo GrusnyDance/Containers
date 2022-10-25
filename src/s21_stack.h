@@ -31,37 +31,28 @@ class stack {
         }
     }
 
-    stack(const stack &s) {
-        stack<value_type> HelpStack;
-        size_ = s.size_;
-        Node* tmp = s.head_;
-        while (tmp != nullptr) {
-            HelpStack.push(tmp->value);
-            tmp = tmp->next;
-            HelpStack.size_++;
+    stack(const stack &s) : head_(nullptr), size_(0) {
+        stack<value_type> help;
+        Node* n = s.head_;
+        while (n != nullptr) {
+            help.push(n->value);
+            n = n->next;
         }
 
-        while (HelpStack.size_) {
-            this->push(HelpStack.top());
-            HelpStack.pop();
-            HelpStack.size_--;
+        while (help.size_ != 0) {
+            this->push(help.top());
+            help.pop();
         }
     }
 
     stack(stack &&s) {
-        head_ = s.head_;
-        size_ = s.size_;
-
-        s.head_ = nullptr;
-        s.size_ = 0;
+        this = s;
     }
 
     ~stack() {
-        if (head_ != nullptr) {
-            for (int i = 0; i < size_; i++) {
-                this->pop();
-            }
-            size_ = 0;
+        while (size_ != 0) {
+            std::cout << "DISRTUCT " << "value = " << this->head_->value << "\n";
+            this->pop();
         }
     }
 

@@ -25,25 +25,34 @@ TEST(stack, constructors) {
 }
 
 TEST(stack, copy) {
-  stack<int> b{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  stack<int> b;
+  b.push(1);
+  b.push(2);
+  b.push(3);
+  b.push(4);
+
   stack<int> a(b);
 
-  for (int i = 10; i > 0; i--) {
-    // ASSERT_EQ(a.top(), i);
-    CT a.top() << EN
+  for (int i = 4; i > 0; i--) {
+    ASSERT_EQ(a.top(), i);
+    CT "b = " << b.top() << "   a = " << a.top() << EN
     a.pop();
+    b.pop();
   }
 }
 
 TEST(stack, PushPop) {
   stack<int> a;
+  original_stack<int>b;
   for (int i = 0; i < 1000; i++) {
     a.push(i);
+    b.push(i);
   }
 
   for (int i = 1000 - 1; i >= 0; i--) {
-    ASSERT_EQ(a.top(), i);
+    ASSERT_EQ(a.top(), b.top());
     a.pop();
+    b.pop();
   }
 }
 
