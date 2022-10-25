@@ -99,6 +99,7 @@ class list {
         node *root = nullptr;  // back
         node *fake = nullptr;  // end
         size_type size_ = 0;
+    protected:
         node *addNode(node *base, const T *value, bool route) {
             node *add = new node;
             if (value != nullptr) add->value = *value;
@@ -117,8 +118,7 @@ class list {
         void closedFake() {
             fake->next = fake;
             fake->prev = fake;
-            head = fake;
-            root = fake;
+            rootHead();
             size_ = 0;
         }
         void fakeAllocate() {
@@ -173,7 +173,8 @@ class list {
             delete fake;
         }
         list &operator=(const list<value_type> &l) {  // copy
-            fakeAllocate();
+            del();
+            closedFake();
             for (auto i : l) addNode(fake, &i, R_PREV);
             return *this;
         }
@@ -261,9 +262,10 @@ class list {
         void sort() {
             iterator start(head);
             iterator end(root);
-            QSort<iterator, value_type>(start, end);
+            QSort<iterator>(start, end);
         }
         iterator emplace(iterator pos, value_type arg) { return insert(pos, arg); }
+        // iterator emplace(iterator pos) { return pos; }
         template<class... Args>
         iterator emplace(const_iterator pos, value_type first, Args&&... args) {
             return emplace(insert(pos, first)++, args...);  // return iterator(last of args)

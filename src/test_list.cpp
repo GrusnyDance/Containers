@@ -335,10 +335,47 @@ TEST(listTest, unique) {
     fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, sort) {
+TEST(listTest, sort1) {
     using type = int;
     std::list<type> norm{1, 3, 8, 0, -123, -4, 5, 7, 9, -9, -4, -1, 0, 5, 123};
     s21::list<type> test{1, 3, 8, 0, -123, -4, 5, 7, 9, -9, -4, -1, 0, 5, 123};
+    fullListCheck<type>(test, norm);
+    norm.sort();
+    test.sort();
+    fullListCheck<type>(test, norm);
+    norm.reverse();
+    test.reverse();
+    fullListCheck<type>(test, norm);
+    norm.sort();
+    test.sort();
+    fullListCheck<type>(test, norm);
+}
+
+TEST(listTest, sort2) {
+    using type = long long int;
+    std::list<type> norm{1234123412341234, 999, 899, 234, -12, -12356, -44444444, -345645634563456};
+    s21::list<type> test{1234123412341234, 999, 899, 234, -12, -12356, -44444444, -345645634563456};
+    fullListCheck<type>(test, norm);
+    norm.sort();
+    test.sort();
+    fullListCheck<type>(test, norm);
+    norm.reverse();
+    test.reverse();
+    fullListCheck<type>(test, norm);
+    norm.sort();
+    test.sort();
+    fullListCheck<type>(test, norm);
+}
+
+TEST(listTest, sort3) {
+    using type = float;
+    std::list<type> norm;
+    s21::list<type> test;
+    for (int k = -1000; k < 1000; k++) {
+        float l = float(k) * float(rand());
+        norm.push_back(l);
+        test.push_back(l);
+    }
     fullListCheck<type>(test, norm);
     norm.sort();
     test.sort();
