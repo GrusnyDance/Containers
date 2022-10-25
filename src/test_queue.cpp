@@ -44,10 +44,73 @@ TEST(queueTest, initializerList3) {
 }
 
 TEST(queueTest, newCopyQueue) {
-    using type = s21::queue<bool>;
-    std::queue<type> norm({{0, 1, 1}, {0, 0, 0}, {1, 1}});
-    s21::queue<type> test({{0, 1, 1}, {0, 0, 0}, {1, 1}});
+    using type = long double;
+    std::queue<type> norm({12, 34e-1, 56e65, 7892341346245});
+    s21::queue<type> test({12, 34e-11, 56e65, 7892341346245});
     queueCheck<type>(test, norm);
+    std::queue<type> normCopy(norm);
+    s21::queue<type> testCopy(test);
+    queueCheck<type>(testCopy, normCopy);
+    queueCheck<type>(test, norm);
+}
+
+TEST(queueTest, operatorCopy1) {
+    using type = bool;
+    std::queue<type> norm({1, 0, 1, 1});
+    s21::queue<type> test({1, 0, 1, 1});
+    queueCheck<type>(test, norm);
+    std::queue<type> normCopy({1});
+    s21::queue<type> testCopy({1});
+    normCopy = norm;
+    testCopy = test;
+    queueCheck<type>(testCopy, normCopy);
+    queueCheck<type>(test, norm);
+}
+
+TEST(queueTest, operatorCopy2) {
+    using type = char;
+    std::queue<type> norm({'r', 'e', 'q'});
+    s21::queue<type> test({'r', 'e', 'q'});
+    queueCheck<type>(test, norm);
+    std::queue<type> normCopy = norm;
+    s21::queue<type> testCopy = test;
+    queueCheck<type>(testCopy, normCopy);
+    queueCheck<type>(test, norm);
+}
+
+TEST(queueTest, newMoveQueue) {
+    using type = float;
+    std::queue<type> norm({1.1, 2.2, 3.3, 4.4, 5.5});
+    s21::queue<type> test({1.1, 2.2, 3.3, 4.4, 5.5});
+    queueCheck<type>(test, norm);
+    std::queue<type> normMove(std::move(norm));
+    s21::queue<type> testMove(std::move(test));
+    queueCheck<type>(test, norm);
+    queueCheck<type>(testMove, normMove);
+}
+
+TEST(queueTest, operatorMove1) {
+    using type = float;
+    std::queue<type> norm({1.1, 2.2, 3.3, 4.4, 5.5});
+    s21::queue<type> test({1.1, 2.2, 3.3, 4.4, 5.5});
+    queueCheck<type>(test, norm);
+    std::queue<type> normMove = std::move(norm);
+    s21::queue<type> testMove = std::move(test);
+    queueCheck<type>(test, norm);
+    queueCheck<type>(testMove, normMove);
+}
+
+TEST(queueTest, operatorMove2) {
+    using type = float;
+    std::queue<type> norm({1.1, 2.2, 3.3, 4.4, 5.5});
+    s21::queue<type> test({1.1, 2.2, 3.3, 4.4, 5.5});
+    queueCheck<type>(test, norm);
+    std::queue<type> normMove;
+    s21::queue<type> testMove;
+    testMove = std::move(test);
+    normMove = std::move(norm);
+    queueCheck<type>(test, norm);
+    queueCheck<type>(testMove, normMove);
 }
 
 TEST(queueTest, pushTest1) {
@@ -125,6 +188,15 @@ TEST(queueTest, swap) {
     test1.swap(test2);
     queueCheck<type>(test1, norm1);
     queueCheck<type>(test2, norm2);
+}
+
+TEST(queueTest, emplaceBack) {
+    using type = int;
+    std::queue<type> norm({1, 2, 3, 88, 89, 90, 100});
+    s21::queue<type> test({1, 2, 3});
+    test.emplace_back(88, 89, 90);
+    test.emplace_back(100);
+    queueCheck<type>(test, norm);
 }
 
 int main(int argc, char **argv) {

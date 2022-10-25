@@ -6,7 +6,7 @@
 namespace s21 {
 
 template <class T>
-class queue: private list<T> {
+class queue: protected list<T> {
     private:
         using List = list<T>;
     public:
@@ -19,11 +19,13 @@ class queue: private list<T> {
         queue() : List() {}
         queue(std::initializer_list<value_type> const &items) : List(items) {}
         queue(const queue &q) : List(q) {}
-        queue(queue &&q) : List(q) {}
-        queue &operator=(queue &&q) { this = *q; }
-        bool operator==(queue other) const {
-            return List::operator==(other);
+        queue(queue &&q) : List(q) { q.List::del(); }
+        queue &operator=(queue &&q) {
+            List::operator=(q);
+            q.List::del();
+            return *this;
         }
+        bool operator==(queue other) const { return List::operator==(other); }
         queue &operator=(const queue &q) {
             List::operator=(q);
             return *this;
@@ -36,6 +38,9 @@ class queue: private list<T> {
         void push(const_reference value) { List::push_back(value); }
         void pop() { List::pop_front(); }
         void swap(queue &other) { List::swap(other); }
+
+        template<class... Args>
+        void emplace_back(Args&&... args) { List::emplace_back(args...); }
 };
 }  // namespace s21
 
