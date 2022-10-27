@@ -1,7 +1,7 @@
 #include <iostream>  // DEBUG
 
 namespace s21 {
-template <typename T, std::size_t N = 0>
+template <typename T, std::size_t N>
 class Array {
  public:
   using value_type = T;
@@ -12,22 +12,16 @@ class Array {
   using size_type = std::size_t;
 
  private:
-  size_type size_;
-  value_type arr_[size_];
+  size_type size_ = N;
+  value_type arr_[N];
 
  public:
   // конструкторы
-  Array() : size_(N) {
-    iterator temp = arr_;
-    for (auto i : temp) {
-      *i = 0;
-    }
-  }
-  Array(std::initializer_list<value_type> const &items) : Array() {
-    size_ = items.size();
+  Array() {}
+  Array(std::initializer_list<value_type> const &items) {
     iterator temp = arr_;
     for (auto i : items) {
-      *temp = *i;  // мб нужно без разыменования
+      *temp = i;
       ++temp;
     }
   }
@@ -35,7 +29,7 @@ class Array {
   Array(Array &&other) = default;
   ~Array() {}
   // скорее всего тут работает и дефолтный
-  operator=(Array &&a) { std::move(other.cbegin(), other.cend(), arr_); }
+  void operator=(Array &&a) { std::move(a.begin(), a.end(), arr_); }
 
   reference at(size_type pos) const {
     if (pos > size_ - 1 || pos < 0) {
@@ -46,19 +40,18 @@ class Array {
   }
 
   reference operator[](size_type pos) { return *(arr_ + pos); }
-  reference operator[](size_type pos) const { return arr_[pos]; }
-  const_reference front() const { return data_[0]; }
-  const_reference back() const { return data_[size_ - 1]; }
+  const_reference front() const { return arr_[0]; }
+  const_reference back() const { return arr_[size_ - 1]; }
 
   iterator data() const { return arr_; }
-  iterator begin() const { return arr_; }
-  iterator end() const { return arr_ + size_; }
+  iterator begin() { return arr_; }
+  iterator end() { return arr_ + size_; }
 
   bool empty() const { return size_ == 0; }
   size_type size() const { return size_; }
   size_type max_size() const { return size_; };
 
-  void swap(array &other) {
+  void swap(Array &other) {
     if (arr_ == other.arr_) return;
     if (size_ != other.size_)
       throw std::out_of_range("Sizes of arrays are not same");
@@ -69,8 +62,8 @@ class Array {
   void fill(const_reference value) {
     if (!size_) return;
     iterator temp = arr_;
-    for (auto i : temp) {
-      *i = value;
+    for (temp = begin(); temp != end(); ++temp) {
+      *temp = value;
     }
   }
 };
