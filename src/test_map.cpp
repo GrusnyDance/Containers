@@ -7,11 +7,6 @@
 
 using namespace std;
 
-// int main() {
-//   // pair<int, string>(3, "sobak");
-//   TreeNode<std::pair<int, std::string>> a(pair<int, string>(3, "sobak"));
-// }
-
 int main() {
   // map<int, int> test;
   // s21::Map<int, int> myMap;
@@ -37,12 +32,7 @@ int main() {
   // myMap.insert(a);
   // myMap.insert(b);
   myMap.insert(c);
-  myMap.insert(d);
-  myMap.insert(e);
-  myMap.insert(f);
-  myMap.insert(g);
-  myMap.insert(h);
-  myMap.insert(j);
+  myMap.emplace(d, e, f);
 
   // myMap2.insert(c);
   // myMap2.insert(f);
@@ -58,12 +48,14 @@ int main() {
   // test.insert(g);
   // test.insert(h);
   // test.insert(j);
-  // cout << myMap.size() << endl;
+  cout << myMap[-10] << endl;
 
-  for (auto it = myMap.begin(); it != myMap.end(); ++it) {
-    myMap.erase(it);
-    cout << myMap.size() << endl;
-  }
+  // cout << test.value_type;
+
+  // for (auto it = myMap.begin(); it != myMap.end(); ++it) {
+  //   myMap.erase(it);
+  //   cout << myMap.size() << endl;
+  // }
 
   // cout << myMap.root_->data_.first << endl;
 

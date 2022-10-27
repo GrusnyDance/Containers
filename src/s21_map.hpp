@@ -3,6 +3,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>  // initializer list, pair
+#include <vector>
 
 namespace s21 {
 // принимает пару
@@ -354,6 +355,12 @@ class Map {
   bool contains(const key_type& key) {
     node* res = findNode(key, root_);
     return (res) ? 1 : 0;
+  }
+
+  template<typename... Args>
+  std::vector<std::pair<iterator, bool>> emplace(Args&&... args) {
+    std::vector<std::pair<iterator, bool>> res = {(insert(args))...};
+    return res;
   }
 
  private:
