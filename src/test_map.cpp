@@ -99,7 +99,19 @@ TEST_F(MyTest, EmptyAndClear) {
 
 TEST_F(MyTest, MaxSize) { ASSERT_EQ(myMap1.max_size(), origMap.max_size()); }
 
+TEST_F(MyTest, Insert) {
+  size_t size1 = myMap1.size();
+  myMap1.insert(j);
+  myMap1.insert(123, "lalala");
+  size_t size2 = myMap1.size();
+  ASSERT_EQ(size2 - size1, 2);
+}
 
+TEST_F(MyTest, InsertOrAssign) {
+  myMap1.insert_or_assign();
+  s21::Map<int, string> a;
+  ASSERT_EQ(myMap1.empty(), a.empty());
+}
 
 }  // namespace TestSpace
 
