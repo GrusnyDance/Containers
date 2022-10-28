@@ -1,3 +1,6 @@
+#include <gtest/gtest.h>
+
+#include <initializer_list>
 #include <iostream>
 #include <map>
 #include <string>
@@ -7,102 +10,101 @@
 
 using namespace std;
 
-int main() {
-  // map<int, int> test;
-  // s21::Map<int, int> myMap;
+namespace TestSpace {
+// To use a test fixture, derive a class from testing::Test.
+class MyTest : public testing::Test {
+ protected:  // You should make the members protected s.t. they can be
+             // accessed from sub-classes.
+  // virtual void SetUp() will be called before each test is run.  You
+  // should define it if you need to initialize the variables.
+  // Otherwise, this can be skipped.
+  void SetUp() override {
+    pair<int, string> a(3, "Never gonna give you up");
+    pair<int, string> b(7, "Never gonna let you down");
+    pair<int, string> c(-1, "Never gonna run around ");
+    pair<int, string> d(10, "and desert you");
+    pair<int, string> e(-10, "Never gonna make you cry");
+    pair<int, string> f(1234, "Never gonna say goodbye");
+    pair<int, string> g(12, "Never gonna tell a lie");
+    pair<int, string> h(2, "and hurt you");
+    myMap1.emplace(a, b, c, d, e, f, g, h);
+    origMap.insert(a);
+    origMap.insert(b);
+    origMap.insert(c);
+    origMap.insert(d);
+    origMap.insert(e);
+    origMap.insert(f);
+    origMap.insert(g);
+    origMap.insert(h);
 
-  map<int, string> test;
-  s21::Map<int, string> myMap;
+    j = make_pair(111, "We're no strangers to love");
+    k = make_pair(222, "You know the rules and so do I");
+    l = make_pair(-111, "A full commitment's what I'm thinking of");
+    m = make_pair(-222, "You wouldn't get this from any other guy");
+  }
+
+  // virtual void TearDown() will be called after each test is run.
+  // You should define it if there is cleanup work to do.  Otherwise,
+  // you don't have to provide it.
+
+  // Declares the variables your tests want to use.
+  map<int, string> origMap;
+  s21::Map<int, string> myMap1;
   s21::Map<int, string> myMap2;
-  pair<int, int> a(3, 100);
-  pair<int, int> b(7, 200);
-  pair<int, string> c(-1, "lalala");
-  pair<int, string> d(10, "hahaha");
-  pair<int, string> e(-10, "princess");
-  pair<int, string> f(1234, "floppa");
-  pair<int, string> g(12, "steppa");
-  pair<int, string> h(2, "juice");
-  pair<int, string> j(6, "hurricane");
 
-  // test.insert(a);
-  // test.insert(b);
-  // test.insert(c);
-  // cout << "my map   " << myMap.size() << endl;
-  // test.insert(d);
-  // myMap.insert(a);
-  // myMap.insert(b);
-  myMap.insert(c);
-  myMap.emplace(d, e, f);
+  pair<int, string> j;
+  pair<int, string> k;
+  pair<int, string> l;
+  pair<int, string> m;
+};
 
-  // myMap2.insert(c);
-  // myMap2.insert(f);
-  // myMap2.insert(g);
+TEST_F(MyTest, Emplace) { ASSERT_EQ(myMap1[3], "Never gonna give you up"); }
 
-  // s21::Map<int, string> lala(myMap2);
-  // myMap.erase(++it);
+TEST_F(MyTest, InitializationList) {
+  s21::Map<int, string> b = {j, k, l, m};
+  map<int, string> a = {j, k, l, m};
+  ASSERT_EQ(a.size(), b.size());
+}
 
-  // test.insert(c);
-  // test.insert(d);
-  // test.insert(e);
-  // test.insert(f);
-  // test.insert(g);
-  // test.insert(h);
-  // test.insert(j);
-  cout << myMap[-10] << endl;
+TEST_F(MyTest, Copy) {
+  s21::Map<int, string> b(myMap1);
+  ASSERT_EQ(b[1], myMap1[1]);
+}
 
-  // cout << test.value_type;
+TEST_F(MyTest, Move) {
+  s21::Map<int, string> b = std::move(myMap1);
+  ASSERT_EQ(b.size(), 8);
+  ASSERT_EQ(myMap1.size(), 0);
+}
 
-  // for (auto it = myMap.begin(); it != myMap.end(); ++it) {
-  //   myMap.erase(it);
-  //   cout << myMap.size() << endl;
-  // }
+TEST_F(MyTest, Begin) {
+  auto it1 = myMap1.begin();
+  auto it2 = origMap.begin();
+  ASSERT_EQ((*it1).first, (*it2).first);
+}
 
-  // cout << myMap.root_->data_.first << endl;
+TEST_F(MyTest, End) {
+  auto it1 = myMap1.end();
+  auto it2 = origMap.end();
+  --it1;
+  --it2;
+  ASSERT_EQ((*it1).first, (*it2).first);
+}
 
-  // for (auto it = test.begin(); it != test.end(); ++it) {
-  //   cout << (*it).first << endl;
-  // }
+TEST_F(MyTest, EmptyAndClear) {
+  myMap1.clear();
+  s21::Map<int, string> a;
+  ASSERT_EQ(myMap1.empty(), a.empty());
+}
 
-  // auto it = myMap.begin();
-  // ++it;
-  // myMap.erase(it);
+TEST_F(MyTest, MaxSize) { ASSERT_EQ(myMap1.max_size(), origMap.max_size()); }
 
-  // cout << "my map   " << myMap.at(-10) << endl;
-  // cout << "my map   " << myMap.at(7) << endl;
-  // cout << "my map   " << myMap.at(-1) << endl;
-  // cout << "my map   " << myMap.at(10) << endl;
-  // cout << "my map   " << myMap.at(-10) << endl;
-  // cout << "my map   " << myMap[12] << endl;
-  // cout << "orig map " << test[234] << endl;
-  // myMap.clear();
-  // cout << "my map   " << myMap.size() << endl;
 
-  // cout << "orig map " << test.at(3) << endl;
-  // cout << "orig map " << test.size() << endl;
-  // cout << "orig map " << test.max_size() << endl;
 
-  // map<int, string> test(pair<int, string>(3, "sobak"));
-  // pair<int, string> a(3, "sobak");
-  // cout << a.first;
-  // test[10] = "lalala";
-  // test[3] = "am testing map";
-  // cout << test.size();
-  // test.insert_or_assign(3, "sobak");
-  // test.insert(3, "sobak");
+}  // namespace TestSpace
 
-  // cout << test[3];
-  // cout << test.size();
-  // cout << test.max_size();
-
-  // for (auto x = test.begin(); x != test.end(); ++x) {
-  //   cout << x->first << endl;
-  // }
-  // auto my_it = test.begin();
-  // auto my_it1 = ++my_it;
-
-  // if (less<std::pair<int, string>>{}(my_it, my_it1)) {
-  //   cout << "false";
-  // } else {
-  //   cout << "true";
-  // }
+GTEST_API_ int main(int argc, char** argv) {
+  printf("Running main() from %s\n", __FILE__);
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

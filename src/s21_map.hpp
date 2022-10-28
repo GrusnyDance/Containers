@@ -90,8 +90,9 @@ template <typename Data, bool isConst = 0>
 class TreeIterator {
  public:
   using iterator_category = std::bidirectional_iterator_tag;  // хз зачем
-  using node_pointer = TreeNode<Data>*;
   using value_type = Data;
+  using node_pointer =
+      std::conditional_t<isConst, const TreeNode<Data>*, TreeNode<Data>*>;
 
   node_pointer ptr_;
   // дружественный класс ноды
@@ -182,7 +183,7 @@ class Map {
   }
 
   // инициализация листом
-  Map(std::initializer_list<key_type> const& items) : Map() {
+  Map(std::initializer_list<value_type> const& items) : Map() {
     for (auto iter = items.begin(); iter != items.end(); ++iter) insert(*iter);
   }
 
@@ -357,7 +358,7 @@ class Map {
     return (res) ? 1 : 0;
   }
 
-  template<typename... Args>
+  template <typename... Args>
   std::vector<std::pair<iterator, bool>> emplace(Args&&... args) {
     std::vector<std::pair<iterator, bool>> res = {(insert(args))...};
     return res;
