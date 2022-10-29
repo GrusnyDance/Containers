@@ -19,7 +19,7 @@ class MyTest : public testing::Test {
   // should define it if you need to initialize the variables.
   // Otherwise, this can be skipped.
   void SetUp() override {
-    pair<int, string> a(3, "Never gonna give you up");
+    pair<int, string> a(4, "Never gonna give you up");
     pair<int, string> b(7, "Never gonna let you down");
     pair<int, string> c(-1, "Never gonna run around ");
     pair<int, string> d(10, "and desert you");
@@ -27,7 +27,9 @@ class MyTest : public testing::Test {
     pair<int, string> f(1234, "Never gonna say goodbye");
     pair<int, string> g(12, "Never gonna tell a lie");
     pair<int, string> h(2, "and hurt you");
-    myMap1.emplace(a, b, c, d, e, f, g, h);
+    pair<int, string> n(0, "Never gonna give you up");
+    pair<int, string> o(3, "Never gonna let you down");
+    myMap1.emplace(a, b, c, d, e, f, g, h, n, o);
     origMap.insert(a);
     origMap.insert(b);
     origMap.insert(c);
@@ -36,6 +38,8 @@ class MyTest : public testing::Test {
     origMap.insert(f);
     origMap.insert(g);
     origMap.insert(h);
+    origMap.insert(n);
+    origMap.insert(o);
 
     j = make_pair(111, "We're no strangers to love");
     k = make_pair(222, "You know the rules and so do I");
@@ -58,7 +62,7 @@ class MyTest : public testing::Test {
   pair<int, string> m;
 };
 
-TEST_F(MyTest, Emplace) { ASSERT_EQ(myMap1[3], "Never gonna give you up"); }
+TEST_F(MyTest, Emplace) { ASSERT_EQ(myMap1[4], "Never gonna give you up"); }
 
 TEST_F(MyTest, InitializationList) {
   s21::Map<int, string> b = {j, k, l, m};
@@ -73,7 +77,7 @@ TEST_F(MyTest, Copy) {
 
 TEST_F(MyTest, Move) {
   s21::Map<int, string> b = std::move(myMap1);
-  ASSERT_EQ(b.size(), 8);
+  ASSERT_EQ(b.size(), 10);
   ASSERT_EQ(myMap1.size(), 0);
 }
 
@@ -108,9 +112,31 @@ TEST_F(MyTest, Insert) {
 }
 
 TEST_F(MyTest, InsertOrAssign) {
-  myMap1.insert_or_assign();
+  myMap1.insert_or_assign(234, "hahaha");
+  ASSERT_EQ(myMap1.at(234), "hahaha");
+}
+
+TEST_F(MyTest, Erase) {
+  size_t size1 = myMap1.size();
+  auto it = myMap1.begin();
+  ++it;
+  myMap1.erase(it);
+  size_t size2 = myMap1.size();
+  ASSERT_EQ(size1 - size2, 1);
+}
+
+TEST_F(MyTest, Swap) {
   s21::Map<int, string> a;
-  ASSERT_EQ(myMap1.empty(), a.empty());
+  a.swap(myMap1);
+  ASSERT_EQ(a.size(), 10);
+}
+
+TEST_F(MyTest, MergeAndContains) {
+  s21::Map<int, string> a;
+  a.emplace(j, k, l, m);
+  cout << a.size() << endl;
+  myMap1.merge(a);
+  ASSERT_EQ(myMap1.size(), 14);
 }
 
 }  // namespace TestSpace

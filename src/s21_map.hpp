@@ -339,18 +339,16 @@ class Map {
   }
 
   void swap(Map& other) {
-    Map temp = other;
-    other = *this;
-    *this = temp;
+    Map temp = std::move(other);
+    other = std::move(*this);
+    *this = std::move(temp);
   }
 
   void merge(Map& other) {
-    for (iterator it = begin(); it != end(); ++it) {
-      insertForMerge(it.getPtr());
+    for (auto it = other.begin(); it != other.end(); it++) {
+      insertForMerge(it.getPtr(), other);
     }
-    other.root_ = nullptr;
-    other.size_ = 0;
-    delete other.fakeNode;
+    other.clear();
   }
 
   bool contains(const key_type& key) {
@@ -432,6 +430,7 @@ class Map {
     value_type val = minRight->data_;
     iterator recursive(minRight);
     erase(recursive);
+    ++size_;
     pos->data_ = val;
   }
 
@@ -500,20 +499,20 @@ class Map {
     }
   }
 
-  void insertForMerge(node* val) {
+  void insertForMerge(node* val, Map& other) {
+    value_type value = val->data_;
+
     if (empty()) {
-      root_->data_ = val->data_;
+      root_->data_ = value;
       ++size_;
-      delete val;
     } else {
       node* temp;
       // если узел с таким ключом уже есть
-      if ((temp = findNode(val->data_.first, root_)) != nullptr) {
-        delete val;
+      if ((temp = findNode(value.first, root_)) != nullptr) {
         return;
       }
-      val->parent_ = val->left_ = val->right_ = nullptr;
-      insertRecursive(root_, 0, val, 0);
+      temp = new node(value);
+      insertRecursive(root_, 0, temp, 0);
       ++size_;
     }
   }
