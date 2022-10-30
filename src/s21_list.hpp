@@ -150,7 +150,7 @@ class list {
   list() : size_(0) { fakeAllocate(); }
   list(size_type n) {
     fakeAllocate();
-    for (int k = 0; k < n; k++) addNode(fake, nullptr, R_PREV);
+    for (size_type k = 0; k < n; k++) addNode(fake, nullptr, R_PREV);
   }
   list(std::initializer_list<value_type> const &items) {
     fakeAllocate();
@@ -161,7 +161,12 @@ class list {
     for (auto i : l) addNode(fake, &i, R_PREV);
   }
   list(list<value_type> &&l)
-      : fake(l.fake), head(l.head), root(l.root), size_(l.size_) {  // move
+  //   : fake(l.fake), head(l.head), root(l.root), size_(l.size_) {  // move
+  {
+    fake = l.fake;
+    head = l.head;
+    root = l.root;
+    size_ = l.size_;
     l.fakeAllocate();
   }
   list &operator=(list<value_type> &&l) {  // move

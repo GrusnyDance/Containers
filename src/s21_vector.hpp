@@ -138,8 +138,7 @@ class vector {
 
   // access specified element with bounds checking
   reference at(size_type pos) {
-    if (pos < 0 || pos > size_ - 1)
-      throw std::out_of_range("index out of range");
+    if (pos > size_ - 1) throw std::out_of_range("index out of range");
     return *(first_ + pos);
   }
 

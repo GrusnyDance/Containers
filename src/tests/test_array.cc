@@ -63,7 +63,7 @@ TEST_F(ArrayTest, Swap) {
 TEST_F(ArrayTest, Fill) {
   B.fill(100);
   origB.fill(100);
-  for (auto i = 0; i < B.size(); ++i) {
+  for (size_t i = 0; i < B.size(); ++i) {
     ASSERT_EQ(B[i], origB[i]);
   }
 }

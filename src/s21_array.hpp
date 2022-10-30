@@ -41,7 +41,7 @@ class Array {
   void operator=(Array &&a) { std::move(a.begin(), a.end(), arr_); }
 
   reference at(size_type pos) {
-    if (pos > size_ - 1 || pos < 0) {
+    if (pos > size_ - 1) {
       throw std::out_of_range("Index is not available");
     } else {
       return arr_[pos];

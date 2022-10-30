@@ -349,7 +349,7 @@ class Map {
 
   void merge(Map& other) {
     for (auto it = other.begin(); it != other.end(); it++) {
-      insertForMerge(it.getPtr(), other);
+      insertForMerge(it.getPtr());
     }
     other.clear();
   }
@@ -502,7 +502,7 @@ class Map {
     }
   }
 
-  void insertForMerge(node* val, Map& other) {
+  void insertForMerge(node* val) {
     value_type value = val->data_;
 
     if (empty()) {
