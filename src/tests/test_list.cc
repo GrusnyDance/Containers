@@ -1,6 +1,4 @@
 
-// #include <gtest/gtest.h>
-
 #include <initializer_list>
 #include <list>
 #include <vector>
@@ -441,8 +439,3 @@ TEST(ListTest, emplaceFront) {
   test.emplace_front(-4e44, 123456789, 1e-34);
   fullListCheck<type>(test, norm);
 }
-
-// int main(int argc, char **argv) {
-//   testing::InitGoogleTest(&argc, argv);
-//   return RUN_ALL_TESTS();
-// }

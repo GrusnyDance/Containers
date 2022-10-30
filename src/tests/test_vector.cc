@@ -2,7 +2,6 @@
 
 #include <vector>
 
-// #include "gtest/gtest.h"
 #include "../s21_vector.hpp"
 
 #define CT std::cout << "            " <<
@@ -292,7 +291,7 @@ TEST(VectorTest, constructor) {
 
 TEST(VectorTest, at) {
   s21::vector<int> a{1, 2, 3, 4};
-  // CT "a.at(3) = " << a.at(3) << EN 
+  // CT "a.at(3) = " << a.at(3) << EN
   a.at(3) = 5;
   ASSERT_EQ(5, a.at(3));
 }
@@ -312,7 +311,7 @@ TEST(VectorTest, reserve_shrink_to_fit) {
   s21::vector<int> a{1, 2, 3, 4, 5, 6};
   a.reserve(10);
   a[10] = 10;
-  // CT "THAN = " << a[10] << EN 
+  // CT "THAN = " << a[10] << EN
   ASSERT_EQ(a[10], 10);
   a.shrink_to_fit();
   // CT "NOW  = " << a[10] << EN
@@ -323,7 +322,7 @@ TEST(VectorTest, clear) {
   s21::vector<int> b{-1, -2, -3, -4, -5, -6};
   for (int i = 0; i < 6; i++) {
   }
-  // CT EN 
+  // CT EN
   a.swap(b);
   for (int i = 0; i < 6; i++) {
     ASSERT_TRUE(a[i] < 0);
@@ -351,8 +350,3 @@ TEST(VectorTest, erase) {
   a.pop_back();
   ASSERT_EQ(a.size(), 3);
 }
-
-// int main() {
-//   testing::InitGoogleTest();
-//   return RUN_ALL_TESTS();
-// }

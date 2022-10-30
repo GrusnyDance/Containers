@@ -1,7 +1,4 @@
-// #include <gmock/gmock.h>
-
 #include <array>
-// #include <iostream>
 
 #include "../s21_array.hpp"
 

@@ -1,5 +1,3 @@
-// #include <gtest/gtest.h>
-
 #include "../s21_set.hpp"
 
 class TestSet {
@@ -394,8 +392,3 @@ TEST(SetTest, functions_erase_alot) {
   tester.std_set_ten.erase(it2);
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 }
-
-// int main() {
-//   testing::InitGoogleTest();
-//   return RUN_ALL_TESTS();
-// }

@@ -1,6 +1,4 @@
 
-// #include <gtest/gtest.h>
-
 #include <initializer_list>
 #include <queue>
 #include <vector>
@@ -200,8 +198,3 @@ TEST(QueueTest, emplaceBack) {
   test.emplace_back(100);
   queueCheck<type>(test, norm);
 }
-
-// int main(int argc, char **argv) {
-//   testing::InitGoogleTest(&argc, argv);
-//   return RUN_ALL_TESTS();
-// }

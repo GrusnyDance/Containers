@@ -1,6 +1,5 @@
 #include <stack>
 
-// #include "gtest/gtest.h"
 #include "../s21_stack.hpp"
 
 #define CT std::cout << "            " <<
@@ -143,7 +142,3 @@ TEST(StackTest, emplace) {
   }
 }
 
-// int main() {
-//   testing::InitGoogleTest();
-//   return RUN_ALL_TESTS();
-// }
