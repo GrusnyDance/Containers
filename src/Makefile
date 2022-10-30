@@ -6,5 +6,9 @@ test:
 
 gcov_report:
 
+lint:
+	cp ../materials/linters/.clang-format ./
+	clang-format -n *.hpp
+
 clean:
-	rm -rf a.out
+	rm -rf a.out .clang-format

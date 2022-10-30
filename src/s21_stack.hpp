@@ -102,8 +102,8 @@ class stack {
     std::swap(this->size_, s.size_);
   }
 
-  template<class... Args>
-  void emplace_front(Args&&... args) {
+  template <class... Args>
+  void emplace_front(Args &&...args) {
     value_type val(args...);
     this->push(val);
   }
