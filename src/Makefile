@@ -9,7 +9,7 @@ test:
 	build/./out
 
 gcov_report: test
-	lcov/bin/./lcov -c -d build/. -o build/coverage.info
+	lcov/bin/./lcov -q -c -d build/. -o build/coverage.info
 	@lcov/bin/./lcov -q --remove build/coverage.info '*/src/test*' '*/include/*' '11*' \
     -o build/coverage.info
 	lcov/bin/./genhtml build/coverage.info --output-directory out
