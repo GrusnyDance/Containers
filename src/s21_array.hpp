@@ -27,11 +27,11 @@ class Array {
       *temp = i;
       ++temp;
     }
-    auto count = items.size();
-    while (count < N) {
+    auto count = N - items.size();
+    while (count > 0) {
       *temp = T();
       ++temp;
-      ++count;
+      --count;
     }
   }
   Array(const Array &other) = default;

@@ -1,11 +1,11 @@
 
-#include <gtest/gtest.h>
+// #include <gtest/gtest.h>
 
 #include <initializer_list>
 #include <list>
 #include <vector>
 
-#include "s21_list.hpp"
+#include "../s21_list.hpp"
 
 template <class T>
 void fullListCheck(s21::list<T> test, std::list<T> norm) {
@@ -31,56 +31,56 @@ void shortListCheck(s21::list<T> test, std::list<T> norm) {
   ASSERT_EQ(test.max_size(), norm.max_size());
 }
 
-TEST(listTest, newList) {
+TEST(ListTest, newList) {
   using type = int;
   std::list<type> norm;
   s21::list<type> test;
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, newSizeList1) {
+TEST(ListTest, newSizeList1) {
   using type = int;
   std::list<type> norm(5);
   s21::list<type> test(5);
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, newSizeList2) {
+TEST(ListTest, newSizeList2) {
   using type = float;
   std::list<type> norm(0);
   s21::list<type> test(0);
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, newSizeList3) {
+TEST(ListTest, newSizeList3) {
   using type = std::pair<int, char>;
   std::list<type> norm(123456);
   s21::list<type> test(123456);
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, initializerList1) {
+TEST(ListTest, initializerList1) {
   using type = double;
   std::list<type> norm{1, 2, -4, 5.55};
   s21::list<type> test{1, 2, -4, 5.55};
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, initializerList2) {
+TEST(ListTest, initializerList2) {
   using type = char;
   std::list<type> norm{'a', 'r', 't', 'y'};
   s21::list<type> test{'a', 'r', 't', 'y'};
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, initializerList3) {
+TEST(ListTest, initializerList3) {
   using type = std::string;
   std::list<type> norm{"qwerty", "asdf", ""};
   s21::list<type> test{"qwerty", "asdf", ""};
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, newCopyList1) {
+TEST(ListTest, newCopyList1) {
   using type = double;
   std::list<type> copyNorm{1.45, 2, -4, 5.55, -65.56, 0, 11};
   s21::list<type> copyTest{1.45, 2, -4, 5.55, -65.56, 0, 11};
@@ -90,7 +90,7 @@ TEST(listTest, newCopyList1) {
   fullListCheck<type>(copyTest, copyNorm);
 }
 
-TEST(listTest, newCopyList2) {
+TEST(ListTest, newCopyList2) {
   using type = std::string;
   std::list<type> copyNorm{"qwerty", "asdf", " "};
   s21::list<type> copyTest{"qwerty", "asdf", " "};
@@ -100,7 +100,7 @@ TEST(listTest, newCopyList2) {
   fullListCheck<type>(copyTest, copyNorm);
 }
 
-TEST(listTest, newMoveList1) {
+TEST(ListTest, newMoveList1) {
   using type = uint;
   std::list<type> moveNorm{1, 2, 3, 4, 5};
   s21::list<type> moveTest{1, 2, 3, 4, 5};
@@ -110,7 +110,7 @@ TEST(listTest, newMoveList1) {
   shortListCheck<type>(moveTest, moveNorm);
 }
 
-TEST(listTest, newMoveList2) {
+TEST(ListTest, newMoveList2) {
   using type = float;
   std::list<type> moveNorm{1.7, 2.8, -0.7, 4.7, -5.66};
   s21::list<type> moveTest{1.7, 2.8, -0.7, 4.7, -5.66};
@@ -122,7 +122,7 @@ TEST(listTest, newMoveList2) {
   shortListCheck<type>(moveTest, moveNorm);
 }
 
-TEST(listTest, clearList) {
+TEST(ListTest, clearList) {
   using type = std::pair<int, char>;
   std::list<type> norm(123456);
   s21::list<type> test(123456);
@@ -132,7 +132,7 @@ TEST(listTest, clearList) {
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, clearEmptyList) {
+TEST(ListTest, clearEmptyList) {
   using type = bool;
   std::list<type> norm;
   s21::list<type> test;
@@ -142,7 +142,7 @@ TEST(listTest, clearEmptyList) {
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, pushBack) {
+TEST(ListTest, pushBack) {
   using type = std::pair<int, char>;
   std::list<type> norm;
   s21::list<type> test;
@@ -158,7 +158,7 @@ TEST(listTest, pushBack) {
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, pushFront) {
+TEST(ListTest, pushFront) {
   using type = long long int;
   std::list<type> norm;
   s21::list<type> test;
@@ -172,7 +172,7 @@ TEST(listTest, pushFront) {
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, popBack) {
+TEST(ListTest, popBack) {
   using type = bool;
   std::list<type> norm{0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1};
   s21::list<type> test{0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1};
@@ -184,7 +184,7 @@ TEST(listTest, popBack) {
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, popFront) {
+TEST(ListTest, popFront) {
   using type = char;
   std::list<type> norm{'a', 'b', 'c', 'T', '1'};
   s21::list<type> test{'a', 'b', 'c', 'T', '1'};
@@ -196,7 +196,7 @@ TEST(listTest, popFront) {
   shortListCheck<type>(test, norm);
 }
 
-TEST(listTest, insert) {
+TEST(ListTest, insert) {
   using type = float;
   std::list<type> norm{0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11};
   s21::list<type> test{0, -1, 2, -3, 4, -5, 6, -7, 8, -9, 10, -11};
@@ -214,7 +214,7 @@ TEST(listTest, insert) {
   }
 }
 
-TEST(listTest, insertEmpty) {
+TEST(ListTest, insertEmpty) {
   using type = float;
   std::list<type> norm(0);
   s21::list<type> test(0);
@@ -223,7 +223,7 @@ TEST(listTest, insertEmpty) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, erase) {
+TEST(ListTest, erase) {
   using type = std::pair<int, bool>;
   std::list<type> norm{{5, 1},    {0, 0},    {3, 1}, {-7, 0},
                        {8890, 1}, {-123, 0}, {0, 0}, {1, 1}};
@@ -245,7 +245,7 @@ TEST(listTest, erase) {
   }
 }
 
-TEST(listTest, swap) {
+TEST(ListTest, swap) {
   using type = int;
   std::list<type> norm{1, 2, 3};
   s21::list<type> test{1, 2, 3};
@@ -259,7 +259,7 @@ TEST(listTest, swap) {
   fullListCheck<type>(testSwap, normSwap);
 }
 
-TEST(listTest, swap_merge) {
+TEST(ListTest, swap_merge) {
   using type = long double;
   std::list<type> norm{1.111, 2.222, 3.333};
   s21::list<type> test{1.111, 2.222, 3.333};
@@ -277,7 +277,7 @@ TEST(listTest, swap_merge) {
   shortListCheck<type>(testSwap, normSwap);
 }
 
-TEST(listTest, merge) {
+TEST(ListTest, merge) {
   using type = int;
   std::list<type> norm{1, 3, 5, 7, 9};
   s21::list<type> test{1, 3, 5, 7, 9};
@@ -291,7 +291,7 @@ TEST(listTest, merge) {
   shortListCheck<type>(testMerge, normMerge);
 }
 
-TEST(listTest, splice) {
+TEST(ListTest, splice) {
   using type = char;
   std::list<type> norm1{'a', 'v', 'm'};
   s21::list<type> test1{'a', 'v', 'm'};
@@ -316,7 +316,7 @@ TEST(listTest, splice) {
   shortListCheck<type>(test3, norm3);
 }
 
-TEST(listTest, reverse) {
+TEST(ListTest, reverse) {
   using type = std::list<int>;  // leak s21::list
   type a{1, 2, 3};
   type b{5, 6};
@@ -329,7 +329,7 @@ TEST(listTest, reverse) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, unique) {
+TEST(ListTest, unique) {
   using type = std::vector<int>;
   std::list<type> norm{{1, 2}, {0, 0}, {0, 0}, {1}, {2}, {2},
                        {1, 2}, {0, 0}, {6},    {2}, {2}};
@@ -341,7 +341,7 @@ TEST(listTest, unique) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, sort1) {
+TEST(ListTest, sort1) {
   using type = int;
   std::list<type> norm{1, 3, 8, 0, -123, -4, 5, 7, 9, -9, -4, -1, 0, 5, 123};
   s21::list<type> test{1, 3, 8, 0, -123, -4, 5, 7, 9, -9, -4, -1, 0, 5, 123};
@@ -357,7 +357,7 @@ TEST(listTest, sort1) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, sort2) {
+TEST(ListTest, sort2) {
   using type = long long int;
   std::list<type> norm{1234123412341234, 999, 899, 234, -12, -12356, -44444444,
                        -345645634563456};
@@ -375,7 +375,7 @@ TEST(listTest, sort2) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, sort3) {
+TEST(ListTest, sort3) {
   using type = float;
   std::list<type> norm;
   s21::list<type> test;
@@ -396,14 +396,14 @@ TEST(listTest, sort3) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, operatorCompare) {
+TEST(ListTest, operatorCompare) {
   using type = std::pair<size_t, long>;
   s21::list<type> test1{{1, -100000}, {2, 21212121}, {3, 4545}};
   s21::list<type> test2(test1);
   ASSERT_EQ(test1, test2);
 }
 
-TEST(listTest, emplace) {
+TEST(ListTest, emplace) {
   using type = int;
   s21::list<type> test{1, 2, 3, 4, 5, 6};
   std::list<type> norm{1, -9, -8, -7, -6, 2, 3, 4, 5, 6};
@@ -413,7 +413,7 @@ TEST(listTest, emplace) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, emplaceOneArg) {
+TEST(ListTest, emplaceOneArg) {
   using type = std::pair<int, char>;
   s21::list<type> test{{1, 'f'}, {123, 'Q'}, {-88, 'p'}};
   std::list<type> norm{{1, 'f'}, {123, 'Q'}, {444, 't'}, {-88, 'p'}};
@@ -424,7 +424,7 @@ TEST(listTest, emplaceOneArg) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, emplaceBack) {
+TEST(ListTest, emplaceBack) {
   using type = std::string;
   s21::list<type> test;
   std::list<type> norm{"qwerty", "asdfgh", "zxcvbn", "123456"};
@@ -433,7 +433,7 @@ TEST(listTest, emplaceBack) {
   fullListCheck<type>(test, norm);
 }
 
-TEST(listTest, emplaceFront) {
+TEST(ListTest, emplaceFront) {
   using type = double;
   s21::list<type> test{-0.0101, 123098.222};
   std::list<type> norm{1e-34, 123456789, -4e44, 123, -0.0101, 123098.222};
@@ -442,7 +442,7 @@ TEST(listTest, emplaceFront) {
   fullListCheck<type>(test, norm);
 }
 
-int main(int argc, char **argv) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+// int main(int argc, char **argv) {
+//   testing::InitGoogleTest(&argc, argv);
+//   return RUN_ALL_TESTS();
+// }

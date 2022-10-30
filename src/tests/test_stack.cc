@@ -1,42 +1,38 @@
 #include <stack>
 
-#include "gtest/gtest.h"
-#include "s21_stack.hpp"
+// #include "gtest/gtest.h"
+#include "../s21_stack.hpp"
 
 #define CT std::cout << "            " <<
 #define EN std::endl;
 
-template <class T>
-using stack = s21::stack<T>;
+// template <class T>
+// using stack = s21::stack<T>;
 
-template <class T>
-using original_stack = std::stack<T>;
+// template <class T>
+// using std::stack = std::stack<T>;
 
-TEST(stack, constructors) {
-  stack<int> a;
-  const stack<int> AA;
-  original_stack<int> B;
-  const original_stack<int> BB;
+TEST(StackTest, constructors) {
+  s21::stack<int> a;
+  const s21::stack<int> AA;
+  std::stack<int> B;
+  const std::stack<int> BB;
 
-  stack<int> b{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  s21::stack<int> b{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   for (int i = 10; i > 0; i--) {
     ASSERT_EQ(b.top(), i);
     b.pop();
   }
-
-  stack<int> lol{1, 2, 3, 4, 5, 6};
-  stack<int> kek = lol;
-  ASSERT_EQ(lol.top(), kek.top());
 }
 
-TEST(stack, copy) {
-  stack<int> b;
+TEST(StackTest, copy) {
+  s21::stack<int> b;
   b.push(1);
   b.push(2);
   b.push(3);
   b.push(4);
 
-  stack<int> a(b);
+  s21::stack<int> a(b);
 
   for (int i = 4; i > 0; i--) {
     ASSERT_EQ(a.top(), i);
@@ -44,26 +40,26 @@ TEST(stack, copy) {
     b.pop();
   }
 
-  stack<int> lol{1, 2, 3, 4, 5};
-  stack<int> kek = std::move(lol);
+  s21::stack<int> lol{1, 2, 3, 4, 5};
+  s21::stack<int> kek = std::move(lol);
 }
 
-TEST(S21StackTest, DefaultConstructor) {
-  stack<int> A;
-  const stack<int> AA;
-  original_stack<int> B;
-  const original_stack<int> BB;
+TEST(StackTest, DefaultConstructor) {
+  s21::stack<int> A;
+  const s21::stack<int> AA;
+  std::stack<int> B;
+  const std::stack<int> BB;
 }
 
-TEST(S21StackTest, Constructors) {
-  stack<int> A;
-  original_stack<int> B;
+TEST(StackTest, Constructors) {
+  s21::stack<int> A;
+  std::stack<int> B;
   for (int i = 0; i < 100; i++) {
     A.push(i);
     B.push(i);
   }
-  stack<int> A_copy(A);
-  stack<int> A_move(std::move(A));
+  s21::stack<int> A_copy(A);
+  s21::stack<int> A_move(std::move(A));
   for (int i = 0; i < 100; i++) {
     EXPECT_EQ(A_copy.top(), A_move.top());
     A_copy.pop();
@@ -71,9 +67,9 @@ TEST(S21StackTest, Constructors) {
   }
 }
 
-TEST(S21StackTest, InitializerConstructor) {
-  stack<int> A({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-  original_stack<int> B({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+TEST(StackTest, InitializerConstructor) {
+  s21::stack<int> A({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+  std::stack<int> B({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
   while (B.size() != 0) {
     EXPECT_EQ(A.top(), B.top());
     A.pop();
@@ -81,9 +77,9 @@ TEST(S21StackTest, InitializerConstructor) {
   }
 }
 
-TEST(S21StackTest, PushAndPop) {
-  stack<int> A;
-  original_stack<int> B;
+TEST(StackTest, PushAndPop) {
+  s21::stack<int> A;
+  std::stack<int> B;
   for (int i = 0; i < 100; i++) {
     A.push(i);
     B.push(i);
@@ -95,9 +91,9 @@ TEST(S21StackTest, PushAndPop) {
   }
 }
 
-TEST(S21StackTest, PushPop2) {
-  stack<int> A;
-  original_stack<int> B;
+TEST(StackTest, PushPop2) {
+  s21::stack<int> A;
+  std::stack<int> B;
   for (int i = 0; i < 100; i++) {
     A.push(i);
     B.push(i);
@@ -109,9 +105,9 @@ TEST(S21StackTest, PushPop2) {
   }
 }
 
-TEST(stack, PushPop) {
-  stack<int> a;
-  original_stack<int> b;
+TEST(StackTest, PushPop) {
+  s21::stack<int> a;
+  std::stack<int> b;
   for (int i = 0; i < 1000; i++) {
     a.push(i);
     b.push(i);
@@ -124,9 +120,9 @@ TEST(stack, PushPop) {
   }
 }
 
-TEST(stack, emplace) {
-  stack<int> a;
-  original_stack<int> b;
+TEST(StackTest, emplace) {
+  s21::stack<int> a;
+  std::stack<int> b;
   b.push(1);
   b.push(2);
   b.push(3);
@@ -147,7 +143,7 @@ TEST(stack, emplace) {
   }
 }
 
-int main() {
-  testing::InitGoogleTest();
-  return RUN_ALL_TESTS();
-}
+// int main() {
+//   testing::InitGoogleTest();
+//   return RUN_ALL_TESTS();
+// }

@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+// #include <gtest/gtest.h>
 
 #include <initializer_list>
 #include <iostream>
@@ -6,13 +6,13 @@
 #include <string>
 #include <utility>
 
-#include "s21_map.hpp"
+#include "../s21_map.hpp"
 
 using namespace std;
 
-namespace TestSpace {
+namespace MapSpace {
 // To use a test fixture, derive a class from testing::Test.
-class MyTest : public testing::Test {
+class MapTest : public testing::Test {
  protected:  // You should make the members protected s.t. they can be
              // accessed from sub-classes.
   // virtual void SetUp() will be called before each test is run.  You
@@ -62,32 +62,33 @@ class MyTest : public testing::Test {
   pair<int, string> m;
 };
 
-TEST_F(MyTest, Emplace) { ASSERT_EQ(myMap1[4], "Never gonna give you up"); }
+TEST_F(MapTest, Emplace) { ASSERT_EQ(myMap1[4], "Never gonna give you up"); }
 
-TEST_F(MyTest, InitializationList) {
+TEST_F(MapTest, InitializationList) {
   s21::Map<int, string> b = {j, k, l, m};
   map<int, string> a = {j, k, l, m};
   ASSERT_EQ(a.size(), b.size());
 }
 
-TEST_F(MyTest, Copy) {
+
+TEST_F(MapTest, Copy) {
   s21::Map<int, string> b(myMap1);
   ASSERT_EQ(b[1], myMap1[1]);
 }
 
-TEST_F(MyTest, Move) {
+TEST_F(MapTest, Move) {
   s21::Map<int, string> b = std::move(myMap1);
   ASSERT_EQ(b.size(), 10);
   ASSERT_EQ(myMap1.size(), 0);
 }
 
-TEST_F(MyTest, Begin) {
+TEST_F(MapTest, Begin) {
   auto it1 = myMap1.begin();
   auto it2 = origMap.begin();
   ASSERT_EQ((*it1).first, (*it2).first);
 }
 
-TEST_F(MyTest, End) {
+TEST_F(MapTest, End) {
   auto it1 = myMap1.end();
   auto it2 = origMap.end();
   --it1;
@@ -95,15 +96,15 @@ TEST_F(MyTest, End) {
   ASSERT_EQ((*it1).first, (*it2).first);
 }
 
-TEST_F(MyTest, EmptyAndClear) {
+TEST_F(MapTest, EmptyAndClear) {
   myMap1.clear();
   s21::Map<int, string> a;
   ASSERT_EQ(myMap1.empty(), a.empty());
 }
 
-TEST_F(MyTest, MaxSize) { ASSERT_EQ(myMap1.max_size(), origMap.max_size()); }
+TEST_F(MapTest, MaxSize) { ASSERT_EQ(myMap1.max_size(), origMap.max_size()); }
 
-TEST_F(MyTest, Insert) {
+TEST_F(MapTest, Insert) {
   size_t size1 = myMap1.size();
   myMap1.insert(j);
   myMap1.insert(123, "lalala");
@@ -111,12 +112,12 @@ TEST_F(MyTest, Insert) {
   ASSERT_EQ(size2 - size1, 2);
 }
 
-TEST_F(MyTest, InsertOrAssign) {
+TEST_F(MapTest, InsertOrAssign) {
   myMap1.insert_or_assign(234, "hahaha");
   ASSERT_EQ(myMap1.at(234), "hahaha");
 }
 
-TEST_F(MyTest, Erase) {
+TEST_F(MapTest, Erase) {
   size_t size1 = myMap1.size();
   auto it = myMap1.begin();
   ++it;
@@ -125,23 +126,23 @@ TEST_F(MyTest, Erase) {
   ASSERT_EQ(size1 - size2, 1);
 }
 
-TEST_F(MyTest, Swap) {
+TEST_F(MapTest, Swap) {
   s21::Map<int, string> a;
   a.swap(myMap1);
   ASSERT_EQ(a.size(), 10);
 }
 
-TEST_F(MyTest, MergeAndContains) {
+TEST_F(MapTest, MergeAndContains) {
   s21::Map<int, string> a;
   a.emplace(j, k, l, m);
   myMap1.merge(a);
   ASSERT_EQ(myMap1.size(), 14);
 }
 
-}  // namespace TestSpace
+}  // namespace MapSpace
 
-GTEST_API_ int main(int argc, char** argv) {
-  printf("Running main() from %s\n", __FILE__);
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+// GTEST_API_ int main(int argc, char** argv) {
+//   printf("Running main() from %s\n", __FILE__);
+//   testing::InitGoogleTest(&argc, argv);
+//   return RUN_ALL_TESTS();
+// }

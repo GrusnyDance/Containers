@@ -1,6 +1,8 @@
 #ifndef _SRC_S21_SORT_HPP_
 #define _SRC_S21_SORT_HPP_
 
+namespace s21 {
+
 template <class iterator>
 void swap(iterator a, iterator b) {
   auto S = *a;
@@ -35,5 +37,7 @@ void QSort(iterator start, iterator end) {
     QSort<iterator>(next, end);
   }
 }
+
+}  // namespace s21
 
 #endif  // _SRC_S21_SORT_HPP_
