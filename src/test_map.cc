@@ -134,7 +134,6 @@ TEST_F(MyTest, Swap) {
 TEST_F(MyTest, MergeAndContains) {
   s21::Map<int, string> a;
   a.emplace(j, k, l, m);
-  cout << a.size() << endl;
   myMap1.merge(a);
   ASSERT_EQ(myMap1.size(), 14);
 }

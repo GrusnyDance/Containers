@@ -24,6 +24,12 @@ class Array {
       *temp = i;
       ++temp;
     }
+    auto count = items.size();
+    while (count < N) {
+      *temp = T();
+      ++temp;
+      ++count;
+    }
   }
   Array(const Array &other) = default;
   Array(Array &&other) = default;
@@ -31,7 +37,7 @@ class Array {
   // скорее всего тут работает и дефолтный
   void operator=(Array &&a) { std::move(a.begin(), a.end(), arr_); }
 
-  reference at(size_type pos) const {
+  reference at(size_type pos) {
     if (pos > size_ - 1 || pos < 0) {
       throw std::out_of_range("Index is not available");
     } else {
@@ -43,7 +49,7 @@ class Array {
   const_reference front() const { return arr_[0]; }
   const_reference back() const { return arr_[size_ - 1]; }
 
-  iterator data() const { return arr_; }
+  iterator data() { return arr_; }
   iterator begin() { return arr_; }
   iterator end() { return arr_ + size_; }
 
