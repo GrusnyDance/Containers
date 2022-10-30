@@ -1,5 +1,5 @@
-#ifndef _SRC_S21_STACK_H_
-#define _SRC_S21_STACK_H_
+#ifndef _SRC_S21_STACK_HPP_
+#define _SRC_S21_STACK_HPP_
 
 #include <cstddef>
 #include <cstring>
@@ -7,19 +7,21 @@
 #include <utility>
 
 namespace s21 {
-template <class T> struct node {
+template <class T>
+struct node {
   node *next;
   T value;
 };
 
-template <class T> class stack {
+template <class T>
+class stack {
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
   using size_type = size_t;
   using Node = node<T>;
 
-public:
+ public:
   // constructors
   stack() : head_(nullptr), size_(0) {}
 
@@ -72,8 +74,7 @@ public:
   }
 
   stack &operator=(stack &&s) {
-    if (s == nullptr)
-      return nullptr;
+    if (s == nullptr) return nullptr;
 
     head_ = s.head_;
     size_ = s.size_;
@@ -110,9 +111,10 @@ public:
     std::swap(this->size_, s.size_);
   }
 
-private:
+ private:
   Node *head_;
   size_type size_;
 };
-} // namespace s21
-#endif // _SRC_S21_STACK_H_
+}  // namespace s21
+
+#endif  // _SRC_S21_STACK_HPP_

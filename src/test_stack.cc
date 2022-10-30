@@ -1,13 +1,16 @@
-#include "s21_stack.h"
-#include "gtest/gtest.h"
 #include <stack>
+
+#include "gtest/gtest.h"
+#include "s21_stack.hpp"
 
 #define CT std::cout << "            " <<
 #define EN std::endl;
 
-template <class T> using stack = s21::stack<T>;
+template <class T>
+using stack = s21::stack<T>;
 
-template <class T> using original_stack = std::stack<T>;
+template <class T>
+using original_stack = std::stack<T>;
 
 TEST(stack, constructors) {
   stack<int> a;

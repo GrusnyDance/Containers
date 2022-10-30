@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#include "s21_set.h"
+
+#include "s21_set.hpp"
 
 class TestSet {
  public:
@@ -126,9 +127,8 @@ TEST(Set, function_size_not_empty) {
 
 TEST(Set, function_max_size_empty) {
   TestSet tester;
-  EXPECT_EQ(tester.s21_set_empty.max_size(),
-  tester.std_set_empty.max_size());
- }
+  EXPECT_EQ(tester.s21_set_empty.max_size(), tester.std_set_empty.max_size());
+}
 
 TEST(Set, function_max_size_not_empty) {
   TestSet tester;
@@ -308,7 +308,8 @@ TEST(Set, operator_plus) {
 //   TestSet tester;
 //   s21::set<int>::iterator i = tester.s21_set_ten.end();
 //   std::set<int>::iterator j = tester.std_set_ten.end();
-//   while (i != tester.s21_set_ten.begin() && j != tester.std_set_ten.begin()) {
+//   while (i != tester.s21_set_ten.begin() && j != tester.std_set_ten.begin())
+//   {
 //     --i;
 //     --j;
 //     EXPECT_EQ(*i, *j);

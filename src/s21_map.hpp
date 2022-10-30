@@ -1,3 +1,6 @@
+#ifndef _SRC_S21_MAP_HPP_
+#define _SRC_S21_MAP_HPP_
+
 #include <iostream>  // DEBUG
 #include <limits>    // max_size
 #include <string>
@@ -518,3 +521,5 @@ class Map {
   }
 };
 }  // namespace s21
+
+#endif  // _SRC_S21_MAP_HPP_

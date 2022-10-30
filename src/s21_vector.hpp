@@ -1,5 +1,5 @@
-#ifndef _SRC_S21_VECTOR_H_
-#define _SRC_S21_VECTOR_H_
+#ifndef _SRC_S21_VECTOR_HPP_
+#define _SRC_S21_VECTOR_HPP_
 
 #include <cstddef>
 #include <cstring>
@@ -8,11 +8,14 @@
 
 namespace s21 {
 
-template <class T> class iterator_vector;
+template <class T>
+class iterator_vector;
 
-template <class T> class const_iterator_vector;
+template <class T>
+class const_iterator_vector;
 
-template <class T> class vector {
+template <class T>
+class vector {
   // value_type	T defines the type of an element (T is template parameter)
   using value_type = T;
 
@@ -37,12 +40,12 @@ template <class T> class vector {
   // size_t)
   using size_type = std::size_t;
 
-private:
+ private:
   value_type *first_;
   size_type size_;
   size_type alloc_size_;
 
-public:
+ public:
   // Constructors, assigment opeartors
   vector() {
     first_ = nullptr;
@@ -261,8 +264,7 @@ public:
 
   // removes the last element
   void pop_back() {
-    if (size_ == 0)
-      return;
+    if (size_ == 0) return;
     size_--;
   }
 
@@ -279,13 +281,15 @@ public:
     return this->insert(pos, val);
   }
 
-  template <class... Args> iterator emplace_back(Args &&...args) {
+  template <class... Args>
+  iterator emplace_back(Args &&...args) {
     value_type val(args...);
     return this->insert(this->end(), val);
   }
 };
 
-template <class T> class iterator_vector {
+template <class T>
+class iterator_vector {
   friend class vector<T>;
   friend class const_iterator_vector<T>;
 
@@ -297,7 +301,7 @@ template <class T> class iterator_vector {
 
   pointer ptr_;
 
-public:
+ public:
   iterator_vector() : ptr_(nullptr){};
   iterator_vector(pointer ptr) : ptr_(ptr){};
   value_type &operator*() const { return (*ptr_); }
@@ -338,19 +342,20 @@ public:
   }
 };
 
-template <class T> class const_iterator_vector {
+template <class T>
+class const_iterator_vector {
   friend class vector<T>;
   friend class iterator_vector<T>;
 
   using iterator_category = std::bidirectional_iterator_tag;
   using difference_type = std::ptrdiff_t;
   using value_type = T;
-  using pointer = T *; // or also value_type*
+  using pointer = T *;  // or also value_type*
   using reference = T &;
 
   pointer ptr_;
 
-public:
+ public:
   const_iterator_vector() : ptr_(nullptr){};
   const_iterator_vector(pointer ptr) : ptr_(ptr){};
   value_type operator*() const { return (*ptr_); }
@@ -391,6 +396,6 @@ public:
   operator iterator_vector<T>() const { return iterator_vector<T>(ptr_); }
 };
 
-} // namespace s21
+}  // namespace s21
 
-#endif // _SRC_S21_VECTOR_H_
+#endif  // _SRC_S21_VECTOR_HPP_

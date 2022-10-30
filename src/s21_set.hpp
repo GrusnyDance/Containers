@@ -1,5 +1,5 @@
-#ifndef __SRC_S21_SET_H__
-#define __SRC_S21_SET_H__
+#ifndef _SRC_S21_SET_HPP_
+#define _SRC_S21_SET_HPP_
 
 #include "tree.h"
 
@@ -31,4 +31,4 @@ class set : public Tree<K, false> {
 
 }
 
-#endif  // __SRC_S21_SET_H__
+#endif  // _SRC_S21_SET_HPP_

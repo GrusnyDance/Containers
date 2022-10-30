@@ -1,3 +1,6 @@
+#ifndef _SRC_S21_ARRAY_HPP_
+#define _SRC_S21_ARRAY_HPP_
+
 #include <iostream>  // DEBUG
 
 namespace s21 {
@@ -74,3 +77,5 @@ class Array {
   }
 };
 }  // namespace s21
+
+#endif  // _SRC_S21_ARRAY_HPP_

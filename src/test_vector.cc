@@ -1,13 +1,16 @@
-#include "s21_vector.h"
-#include "gtest/gtest.h"
 #include <string.h>
+
+#include "gtest/gtest.h"
+#include "s21_vector.hpp"
 
 #define CT std::cout << "            " <<
 #define EN std::endl;
 
-template <class T> using vector = s21::vector<T>;
+template <class T>
+using vector = s21::vector<T>;
 
-template <class T> using original_vector = std::vector<T>;
+template <class T>
+using original_vector = std::vector<T>;
 
 class S21VectorTest : public ::testing::Test {};
 
