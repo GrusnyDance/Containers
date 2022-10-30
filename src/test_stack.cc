@@ -23,6 +23,10 @@ TEST(stack, constructors) {
     ASSERT_EQ(b.top(), i);
     b.pop();
   }
+
+  stack<int> lol{1, 2, 3, 4, 5, 6};
+  stack<int> kek = lol;
+  ASSERT_EQ(lol.top(), kek.top());
 }
 
 TEST(stack, copy) {
@@ -117,6 +121,29 @@ TEST(stack, PushPop) {
     ASSERT_EQ(a.top(), b.top());
     a.pop();
     b.pop();
+  }
+}
+
+TEST(stack, emplace) {
+  stack<int> a;
+  original_stack<int> b;
+  b.push(1);
+  b.push(2);
+  b.push(3);
+  b.push(4);
+  b.emplace(5);
+
+  a.push(1);
+  a.push(2);
+  a.push(3);
+  a.push(4);
+  a.emplace_front(5);
+  int i = 5;
+  while (i > 0) {
+    ASSERT_EQ(a.top(), b.top());
+    a.pop();
+    b.pop();
+    i--;
   }
 }
 

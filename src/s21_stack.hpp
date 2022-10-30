@@ -59,18 +59,9 @@ class stack {
     }
   }
 
-  stack &operator=(stack &s) {
-    stack<value_type> help;
-    Node *n = s.head_;
-    while (n != nullptr) {
-      help.push(n->value);
-      n = n->next;
-    }
-
-    while (help.size_ != 0) {
-      this->push(help.top());
-      help.pop();
-    }
+  stack operator=(stack &s) const {
+    stack<value_type> result(s);
+    return result;
   }
 
   stack &operator=(stack &&s) {
@@ -109,6 +100,12 @@ class stack {
   void swap(stack &s) {
     std::swap(this->head_, s.head_);
     std::swap(this->size_, s.size_);
+  }
+
+  template<class... Args>
+  void emplace_front(Args&&... args) {
+    value_type val(args...);
+    this->push(val);
   }
 
  private:
