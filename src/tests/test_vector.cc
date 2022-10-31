@@ -246,40 +246,6 @@ TEST(VectorTest, Swap) {
   EXPECT_EQ(A.size(), 0);
 }
 
-TEST(VectorTest, Emplace) {
-  s21::vector<std::pair<int, char>> A;
-  std::vector<std::pair<int, char>> B;
-  A.emplace_back(1, 'a');
-  A.emplace_back(2, 'b');
-  A.emplace_back(3, 'c');
-  A.emplace_back(4, 'd');
-  A.emplace_back(5, 'e');
-  A.emplace(A.begin(), 6, 'd');
-  A.emplace(A.end(), 7, 'e');
-  A.emplace(--A.end(), 8, 'f');
-  A.emplace(A.begin(), 6, 'd');
-  A.emplace(A.end(), 7, 'e');
-  A.emplace(--A.end(), 8, 'f');
-
-  B.emplace_back(1, 'a');
-  B.emplace_back(2, 'b');
-  B.emplace_back(3, 'c');
-  B.emplace_back(4, 'd');
-  B.emplace_back(5, 'e');
-  B.emplace(B.begin(), 6, 'd');
-  B.emplace(B.end(), 7, 'e');
-  B.emplace(--B.end(), 8, 'f');
-  B.emplace(B.begin(), 6, 'd');
-  B.emplace(B.end(), 7, 'e');
-  B.emplace(--B.end(), 8, 'f');
-
-  auto j = A.begin();
-  for (auto k : B) {
-    EXPECT_EQ(k, *j);
-    j++;
-  }
-}
-
 TEST(VectorTest, constructor) {
   s21::vector<int> a{555, 1, 2, 3, 4};
   s21::vector<int> b(a);
@@ -304,17 +270,14 @@ TEST(VectorTest, FrontBack2) {
 
 TEST(VectorTest, data) {
   s21::vector<int> a{213, 4, 432, 42, 4, 2341};
-  // CT a.data();
 }
 
 TEST(VectorTest, reserve_shrink_to_fit) {
   s21::vector<int> a{1, 2, 3, 4, 5, 6};
   a.reserve(10);
-  a[10] = 10;
-  // CT "THAN = " << a[10] << EN
-  ASSERT_EQ(a[10], 10);
+  a[9] = 10;
+  ASSERT_EQ(a[9], 10);
   a.shrink_to_fit();
-  // CT "NOW  = " << a[10] << EN
 }
 
 TEST(VectorTest, clear) {
@@ -349,4 +312,39 @@ TEST(VectorTest, erase) {
   ASSERT_EQ(a[0], 2);
   a.pop_back();
   ASSERT_EQ(a.size(), 3);
+}
+
+TEST(VectorTest, Emplace) {
+  s21::vector<int>a;
+  std::vector<int>b;
+
+  a.emplace_back(1);
+  a.emplace_back(2);
+  a.emplace_back(3);
+  a.emplace_back(4);
+  a.emplace_back(5);
+  a.emplace(a.begin(), 6);
+  a.emplace(a.end(), 7);
+  a.emplace(--a.end(), 8);
+  a.emplace(a.begin(), 6);
+  a.emplace(a.end(), 7);
+  a.emplace(--a.end(), 8);
+
+  b.emplace_back(1);
+  b.emplace_back(2);
+  b.emplace_back(3);
+  b.emplace_back(4);
+  b.emplace_back(5);
+  b.emplace(b.begin(), 6);
+  b.emplace(b.end(), 7);
+  b.emplace(--b.end(), 8);
+  b.emplace(b.begin(), 6);
+  b.emplace(b.end(), 7);
+  b.emplace(--b.end(), 8);
+
+  auto j = a.begin();
+  for (auto k : b) {
+    EXPECT_EQ(k, *j);
+    j++;
+  }
 }
