@@ -4,10 +4,12 @@ all: test gcov_report
 
 test:
 	mkdir -p build
-	g++ -g -Wall -Werror -Wextra -std=c++17 -Wpedantic \
+	g++ -g -Wall -Werror -Wextra $(FLAGS) -std=c++17 -Wpedantic \
 	tests/tests.cc -o build/out $(FLAGS)
 	build/./out
-
+	mv *gcno build/
+	mv *gcda build/
+	
 gcov_report: test
 	lcov/bin/./lcov -q -c -d build/. -o build/coverage.info
 	@lcov/bin/./lcov -q --remove build/coverage.info '*/src/test*' '*/include/*' '11*' \
@@ -21,3 +23,5 @@ lint:
 clean:
 	rm -rf a.out .clang-format build \
 	*gcda *gcno out
+
+.SILENT : test clean lint gcov_report

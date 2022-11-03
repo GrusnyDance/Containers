@@ -61,6 +61,7 @@ TEST(VectorTest, InitializerListConstructor) {
 TEST(VectorTest, CopyConstructor) {
   s21::vector<int> A({1, 2, 3, 4, 5});
   s21::vector<int> B(A);
+
   auto j = B.begin();
   for (auto i : A) {
     EXPECT_EQ(i, *j);

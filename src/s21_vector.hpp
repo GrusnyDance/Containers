@@ -72,7 +72,7 @@ class vector {
   vector(const vector &v) : size_(v.size_), alloc_size_(v.alloc_size_) {
     if (size_) {
       first_ = new value_type[size_];
-      std::copy(v.first_, v.first_ + (v.size_ - 1), first_);
+      std::copy(v.first_, v.first_ + v.size_, first_);
     } else {
       first_ = nullptr;
     }

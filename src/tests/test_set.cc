@@ -177,41 +177,41 @@ TEST(SetTest, function_swap_empty) {
   EXPECT_EQ(tester.s21_set_swap.empty(), tester.std_set_swap.empty());
 }
 
-// TEST(SetTest, function_merge_with_duplicates) {
-//   TestSet tester;
-//   tester.s21_set_merge.merge(tester.s21_set_ten);
-//   tester.std_set_merge.merge(tester.std_set_ten);
+TEST(SetTest, function_merge_with_duplicates) {
+  TestSet tester;
+  tester.s21_set_merge.merge(tester.s21_set_ten);
+  tester.std_set_merge.merge(tester.std_set_ten);
 
-//   EXPECT_EQ(tester.s21_set_merge.find(1) != tester.s21_set_merge.end(),
-//             tester.std_set_merge.find(1) != tester.std_set_merge.end());
-//   EXPECT_EQ(tester.s21_set_merge.find(2) != tester.s21_set_merge.end(),
-//             tester.std_set_merge.find(2) != tester.std_set_merge.end());
-//   EXPECT_EQ(tester.s21_set_merge.find(76) != tester.s21_set_merge.end(),
-//             tester.std_set_merge.find(76) != tester.std_set_merge.end());
+  EXPECT_EQ(tester.s21_set_merge.find(1) != tester.s21_set_merge.end(),
+            tester.std_set_merge.find(1) != tester.std_set_merge.end());
+  EXPECT_EQ(tester.s21_set_merge.find(2) != tester.s21_set_merge.end(),
+            tester.std_set_merge.find(2) != tester.std_set_merge.end());
+  EXPECT_EQ(tester.s21_set_merge.find(76) != tester.s21_set_merge.end(),
+            tester.std_set_merge.find(76) != tester.std_set_merge.end());
 
-//   EXPECT_EQ(tester.s21_set_merge.size(), tester.std_set_merge.size());
-//   EXPECT_EQ(tester.std_set_merge.empty(), tester.std_set_merge.empty());
-// }
+  EXPECT_EQ(tester.s21_set_merge.size(), tester.std_set_merge.size());
+  EXPECT_EQ(tester.std_set_merge.empty(), tester.std_set_merge.empty());
+}
 
-// TEST(SetTest, function_merge_wihout_duplicates) {
-//   TestSet tester;
-//   tester.s21_set_ten.merge(tester.s21_set_swap);
-//   tester.std_set_ten.merge(tester.std_set_swap);
+TEST(SetTest, function_merge_wihout_duplicates) {
+  TestSet tester;
+  tester.s21_set_ten.merge(tester.s21_set_swap);
+  tester.std_set_ten.merge(tester.std_set_swap);
 
-//   EXPECT_EQ(tester.s21_set_ten.find(95) != tester.s21_set_ten.end(),
-//             tester.std_set_ten.find(95) != tester.std_set_ten.end());
-//   EXPECT_EQ(tester.s21_set_ten.find(1) != tester.s21_set_ten.end(),
-//             tester.std_set_ten.find(1) != tester.std_set_ten.end());
-//   EXPECT_EQ(tester.s21_set_ten.find(94) != tester.s21_set_ten.end(),
-//             tester.std_set_ten.find(94) != tester.std_set_ten.end());
-//   EXPECT_EQ(tester.s21_set_ten.find(76) != tester.s21_set_ten.end(),
-//             tester.std_set_ten.find(76) != tester.std_set_ten.end());
+  EXPECT_EQ(tester.s21_set_ten.find(95) != tester.s21_set_ten.end(),
+            tester.std_set_ten.find(95) != tester.std_set_ten.end());
+  EXPECT_EQ(tester.s21_set_ten.find(1) != tester.s21_set_ten.end(),
+            tester.std_set_ten.find(1) != tester.std_set_ten.end());
+  EXPECT_EQ(tester.s21_set_ten.find(94) != tester.s21_set_ten.end(),
+            tester.std_set_ten.find(94) != tester.std_set_ten.end());
+  EXPECT_EQ(tester.s21_set_ten.find(76) != tester.s21_set_ten.end(),
+            tester.std_set_ten.find(76) != tester.std_set_ten.end());
 
-//   EXPECT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
-//   EXPECT_EQ(tester.std_set_ten.empty(), tester.std_set_ten.empty());
-//   EXPECT_EQ(tester.s21_set_swap.size(), tester.std_set_swap.size());
-//   EXPECT_EQ(tester.s21_set_swap.empty(), tester.std_set_swap.empty());
-// }
+  EXPECT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
+  EXPECT_EQ(tester.std_set_ten.empty(), tester.std_set_ten.empty());
+  EXPECT_EQ(tester.s21_set_swap.size(), tester.std_set_swap.size());
+  EXPECT_EQ(tester.s21_set_swap.empty(), tester.std_set_swap.empty());
+}
 
 TEST(SetTest, function_clear_not_empty) {
   TestSet tester;
@@ -236,35 +236,35 @@ TEST(SetTest, function_begin_not_empty) {
   EXPECT_EQ(*i, *j);
 }
 
-// TEST(SetTest, function_begin_empty) {
-//   TestSet tester;
-//   s21::set<int>::iterator i = tester.s21_set_empty.begin();
-//   std::set<int>::iterator j = tester.std_set_empty.begin();
-//   EXPECT_EQ(*i, *j);
-// }
+TEST(SetTest, function_begin_empty) {
+  TestSet tester;
+  s21::set<int>::iterator i = tester.s21_set_empty.begin();
+  std::set<int>::iterator j = tester.std_set_empty.begin();
+  EXPECT_EQ(*i, *j);
+}
 
-// TEST(SetTest, function_const_begin_not_empty) {
-//   TestSet tester;
-//   s21::set<int>::const_iterator i = tester.s21_set_ten.begin();
-//   std::set<int>::const_iterator j = tester.std_set_ten.begin();
-//   EXPECT_EQ(*i, *j);
-// }
+TEST(SetTest, function_const_begin_not_empty) {
+  TestSet tester;
+  s21::set<int>::const_iterator i = tester.s21_set_ten.cbegin();
+  std::set<int>::const_iterator j = tester.std_set_ten.cbegin();
+  EXPECT_EQ(*i, *j);
+}
 
-// TEST(SetTest, function_const_begin_empty) {
-//   TestSet tester;
-//   s21::set<int>::const_iterator i = tester.s21_set_empty.begin();
-//   std::set<int>::const_iterator j = tester.std_set_empty.begin();
-//   EXPECT_EQ(*i, *j);
-// }
+TEST(SetTest, function_const_begin_empty) {
+  TestSet tester;
+  s21::set<int>::const_iterator i = tester.s21_set_empty.cbegin();
+  std::set<int>::const_iterator j = tester.std_set_empty.cbegin();
+  EXPECT_EQ(*i, *j);
+}
 
-// TEST(SetTest, function_end_not_empty) {
-//   TestSet tester;
-//   s21::set<int>::iterator i = tester.s21_set_ten.end();
-//   std::set<int>::iterator j = tester.std_set_ten.end();
-//   --i;
-//   --j;
-//   EXPECT_EQ(*i, *j);
-// }
+TEST(SetTest, function_end_not_empty) {
+  TestSet tester;
+  s21::set<int>::iterator i = tester.s21_set_ten.end();
+  std::set<int>::iterator j = tester.std_set_ten.end();
+  --i;
+  --j;
+  EXPECT_EQ(*i, *j);
+}
 
 TEST(SetTest, function_end_empty) {
   TestSet tester;
@@ -273,21 +273,12 @@ TEST(SetTest, function_end_empty) {
   EXPECT_EQ(*i, *j);
 }
 
-// TEST(SetTest, function_const_end_not_empty) {
-//   TestSet tester;
-//   s21::set<int>::const_iterator i = tester.s21_set_ten.end();
-//   std::set<int>::const_iterator j = tester.std_set_ten.end();
-//   --i;
-//   --j;
-//   EXPECT_EQ(*i, *j);
-// }
-
-// TEST(SetTest, function_const_end_empty) {
-//   TestSet tester;
-//   s21::set<int>::const_iterator i = tester.s21_set_empty.end();
-//   std::set<int>::const_iterator j = tester.std_set_empty.end();
-//   EXPECT_EQ(*i, *j);
-// }
+TEST(SetTest, function_const_end_empty) {
+  TestSet tester;
+  s21::set<int>::const_iterator i = tester.s21_set_empty.cend();
+  std::set<int>::const_iterator j = tester.std_set_empty.cend();
+  EXPECT_EQ(*i, *j);
+}
 
 TEST(SetTest, operator_plus) {
   TestSet tester;
@@ -302,19 +293,19 @@ TEST(SetTest, operator_plus) {
   EXPECT_EQ(tester.std_set_ten.empty(), tester.std_set_ten.empty());
 }
 
-// TEST(SetTest, operator_minus) {
-//   TestSet tester;
-//   s21::set<int>::iterator i = tester.s21_set_ten.end();
-//   std::set<int>::iterator j = tester.std_set_ten.end();
-//   while (i != tester.s21_set_ten.begin() && j != tester.std_set_ten.begin())
-//   {
-//     --i;
-//     --j;
-//     EXPECT_EQ(*i, *j);
-//   }
-//   EXPECT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
-//   EXPECT_EQ(tester.s21_set_ten.empty(), tester.std_set_ten.empty());
-// }
+TEST(SetTest, operator_minus) {
+  TestSet tester;
+  s21::set<int>::iterator i = tester.s21_set_ten.end();
+  std::set<int>::iterator j = tester.std_set_ten.end();
+  while (i != tester.s21_set_ten.begin() && j != tester.std_set_ten.begin())
+  {
+    --i;
+    --j;
+    EXPECT_EQ(*i, *j);
+  }
+  EXPECT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
+  EXPECT_EQ(tester.s21_set_ten.empty(), tester.std_set_ten.empty());
+}
 
 TEST(SetTest, operation_assignment) {
   TestSet tester;
@@ -382,13 +373,17 @@ TEST(SetTest, functions_erase_alot) {
   std::set<int>::iterator it2 = tester.std_set_ten.find(76);
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
+  std::cout << "line 76" << std::endl;
   it1 = tester.s21_set_ten.find(123);
   it2 = tester.std_set_ten.find(123);
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
+  std::cout << "line 123" << std::endl;
   it1 = tester.s21_set_ten.find(43);
   it2 = tester.std_set_ten.find(43);
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
+  std::cout << "line 43" << std::endl;
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 }
+
