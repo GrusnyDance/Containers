@@ -87,6 +87,14 @@ class TreeNode {
     }
     return temp;
   }
+
+  TreeNode* getMax() {
+    TreeNode* temp = this;
+    while (temp->right_) {
+      temp = temp->right_;
+    }
+    return temp;
+  }
 };
 
 template <typename Data, bool isConst = 0>
@@ -191,12 +199,21 @@ class Tree {
   }
 
   ~Tree() {  // деструктор
+             // for (auto iter = begin(); iter != end(); ++iter) {
+             //   std::cout << " DO CLEAR:" << *iter << std::endl;
+             // }
+    // std::cout << "ВЫЗВАЛСЯ ДЕСТРУКТОР!!!" << std::endl;
+    // for (auto iter = begin(); iter != end(); ++iter) {
+    //   std::cout << " " << *iter << std::endl;
+    // }
+    // std::cout <<  std::endl;
     clear();
     if (fakeNode) delete fakeNode;
     if (root_) delete root_;
   }
 
   void clear() {
+    if (root_ == nullptr) return;
     if (size_ > 0) {
       clearRecursive(root_);
       root_->right_ = fakeNode;
@@ -205,7 +222,7 @@ class Tree {
     }
   }
 
-  void operator=(Tree &other) {
+  void operator=(Tree& other) {
     this->clear();
     for (auto i = other.begin(); i != other.end(); ++i) {
       this->insert(*i);
@@ -295,8 +312,6 @@ class Tree {
     other.clear();
   }
 
-
-
   template <typename... Args>
   std::vector<std::pair<iterator, bool>> emplace(Args&&... args) {
     std::vector<std::pair<iterator, bool>> res = {(insert(args))...};
@@ -328,10 +343,12 @@ class Tree {
 
   void clearRecursive(node* root) {
     if (root) {
-      // ne robit....
-      // if (root->left_) clearRecursive(root->left_);
-      // if (root->right_) clearRecursive(root->right_);
-      // if (root != root_ && root != fakeNode && root) delete root;
+      if (root->left_) clearRecursive(root->left_);
+      if (root->right_) clearRecursive(root->right_);
+      if (root != root_ && root != fakeNode && root) {
+        delete root;
+        root = nullptr;
+      }
     }
   }
 
@@ -343,7 +360,7 @@ class Tree {
       return root;
     }
     return (common_compare(root->data_) > key) ? findNode(key, root->left_)
-                                     : findNode(key, root->right_);
+                                               : findNode(key, root->right_);
   }
 
   void insertRecursive(node* root, node* parent, node* val, bool right) {
@@ -395,8 +412,9 @@ class Tree {
 
   void deleteNoRightChildren(iterator pos) {
     if (pos.getPtr() == root_) {
-      iterator newMax = --pos;
       iterator newRoot = pos->left_;
+      node* temp = pos->left_->getMax();
+      iterator newMax(temp);
 
       newMax->right_ = fakeNode;
       fakeNode->parent_ = newMax.getPtr();
@@ -406,17 +424,23 @@ class Tree {
     } else {
       iterator newPos = pos->left_;
       iterator parent = pos->parent_;
-      if (pos->right_ == fakeNode) {
-        iterator newMax = --pos;
-        newMax->right_ = fakeNode;
-        fakeNode->parent_ = newMax.getPtr();
-      }
-      if (common_compare(*pos) > parent->data_) {
-        parent->right_ = newPos.getPtr();
-      } else {
+      if (common_compare(*pos) > parent->data_) {  // правый узел
+        if (pos->right_ == fakeNode) {
+          parent->right_ = newPos.getPtr();
+          newPos->parent_ = parent.getPtr();
+
+          node* temp = pos->left_->getMax();
+          iterator newMax(temp);
+          fakeNode->parent_ = newMax.getPtr();
+          temp->right_ = fakeNode;
+        } else {
+          parent->right_ = newPos.getPtr();
+          newPos->parent_ = parent.getPtr();
+        }
+      } else {  // левый узел, тут не может быть фейковой ноды
         parent->left_ = newPos.getPtr();
+        newPos->parent_ = parent.getPtr();
       }
-      newPos->parent_ = parent.getPtr();
       delete pos.getPtr();
     }
   }
@@ -460,6 +484,6 @@ class Tree {
   }
 };
 
-} // namespace s21
+}  // namespace s21
 
 #endif  // _SRC_TREE_H_

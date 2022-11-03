@@ -369,21 +369,37 @@ TEST(SetTest, function_erase) {
 
 TEST(SetTest, functions_erase_alot) {
   TestSet tester;
+  
   s21::set<int>::iterator it1 = tester.s21_set_ten.find(76);
   std::set<int>::iterator it2 = tester.std_set_ten.find(76);
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
-  std::cout << "line 76" << std::endl;
+  EXPECT_EQ(tester.s21_set_ten.find(76) == tester.s21_set_ten.end(),
+          tester.std_set_ten.find(76) == tester.std_set_ten.end());
+  ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
+  
   it1 = tester.s21_set_ten.find(123);
   it2 = tester.std_set_ten.find(123);
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
-  std::cout << "line 123" << std::endl;
+  EXPECT_EQ(tester.s21_set_ten.find(123) == tester.s21_set_ten.end(),
+          tester.std_set_ten.find(123) == tester.std_set_ten.end());
+  ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
+
   it1 = tester.s21_set_ten.find(43);
   it2 = tester.std_set_ten.find(43);
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
-  std::cout << "line 43" << std::endl;
+  EXPECT_EQ(tester.s21_set_ten.find(43) == tester.s21_set_ten.end(),
+          tester.std_set_ten.find(43) == tester.std_set_ten.end());
+  ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
+
+  it1 = tester.s21_set_ten.find(2);
+  it2 = tester.std_set_ten.find(2);
+  tester.s21_set_ten.erase(it1);
+  tester.std_set_ten.erase(it2);
+  EXPECT_EQ(tester.s21_set_ten.find(2) == tester.s21_set_ten.end(),
+          tester.std_set_ten.find(2) == tester.std_set_ten.end());
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 }
 

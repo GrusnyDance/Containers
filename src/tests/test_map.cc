@@ -61,6 +61,13 @@ class MapTest : public testing::Test {
   pair<int, string> m;
 };
 
+TEST_F(MapTest, clear_test) {
+  s21::map<int, string> a;
+  s21::map<int, string> b = {j,k,l,m};
+  a.clear();
+  b.clear();
+}
+
 TEST_F(MapTest, Emplace) { ASSERT_EQ(myMap1[4], "Never gonna give you up"); }
 
 TEST_F(MapTest, InitializationList) {
@@ -111,32 +118,32 @@ TEST_F(MapTest, Insert) {
   ASSERT_EQ(size2 - size1, 2);
 }
 
-// TEST_F(MapTest, InsertOrAssign) {
-//   myMap1.insert_or_assign(234, "hahaha");
-//   ASSERT_EQ(myMap1.at(234), "hahaha");
-// }
+TEST_F(MapTest, InsertOrAssign) {
+  myMap1.insert_or_assign(234, "hahaha");
+  ASSERT_EQ(myMap1.at(234), "hahaha");
+}
 
-// TEST_F(MapTest, Erase) {
-//   size_t size1 = myMap1.size();
-//   auto it = myMap1.begin();
-//   ++it;
-//   myMap1.erase(it);
-//   size_t size2 = myMap1.size();
-//   ASSERT_EQ(size1 - size2, 1);
-// }
+TEST_F(MapTest, Erase) {
+  size_t size1 = myMap1.size();
+  auto it = myMap1.begin();
+  ++it;
+  myMap1.erase(it);
+  size_t size2 = myMap1.size();
+  ASSERT_EQ(size1 - size2, 1);
+}
 
-// TEST_F(MapTest, Swap) {
-//   s21::map<int, string> a;
-//   a.swap(myMap1);
-//   ASSERT_EQ(a.size(), 10);
-// }
+TEST_F(MapTest, Swap) {
+  s21::map<int, string> a;
+  a.swap(myMap1);
+  ASSERT_EQ(a.size(), 10);
+}
 
-// TEST_F(MapTest, MergeAndContains) {
-//   s21::map<int, string> a;
-//   a.emplace(j, k, l, m);
-//   myMap1.merge(a);
-//   ASSERT_EQ(myMap1.size(), 14);
-// }
+TEST_F(MapTest, MergeAndContains) {
+  s21::map<int, string> a;
+  a.emplace(j, k, l, m);
+  myMap1.merge(a);
+  ASSERT_EQ(myMap1.size(), 14);
+}
 
 }  // namespace MapSpace
 
