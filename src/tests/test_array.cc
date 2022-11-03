@@ -42,7 +42,7 @@ TEST_F(ArrayTest, Data) { ASSERT_EQ(*(A.data()), *(origA.data())); }
 
 TEST_F(ArrayTest, Begin) { ASSERT_EQ(*(A.begin()), *(origA.begin())); }
 
-TEST_F(ArrayTest, End) { ASSERT_EQ(*(A.end()), *(origA.end())); }
+TEST_F(ArrayTest, End) { ASSERT_EQ(*(A.end() - 2), *(origA.end() - 2)); }
 
 TEST_F(ArrayTest, Empty) {
   array<int, 0> E;

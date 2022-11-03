@@ -6,9 +6,12 @@ test:
 	mkdir -p build
 	g++ -g -Wall -Werror -Wextra $(FLAGS) -std=c++17 -Wpedantic \
 	tests/tests.cc -o build/out $(FLAGS)
+	# valgrind --track-origins=yes --show-leak-kinds=all --leak-check=full 
 	build/./out
-	mv *gcno build/
+ifeq ($(shell uname), Darwin)
 	mv *gcda build/
+	mv *gcno build/
+endif
 	
 gcov_report: test
 	lcov/bin/./lcov -q -c -d build/. -o build/coverage.info

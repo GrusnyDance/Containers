@@ -169,8 +169,8 @@ class Tree {
 
  public:
   Tree() {
-    fakeNode = new node();  // скобки для вызова дефолтного конструктора
-    root_ = new node();
+    fakeNode = (node*)new node();  // скобки для вызова дефолтного конструктора
+    root_ = (node*)new node();
     root_->right_ = fakeNode;
     fakeNode->parent_ = root_;
   }
@@ -232,7 +232,9 @@ class Tree {
   // оператор присваивания перемещением
   void operator=(Tree&& other) {
     if (this == &other) return;
-    clearRecursive(root_);
+    clear();
+    delete root_;
+    delete fakeNode;
 
     root_ = other.root_;
     size_ = other.size_;

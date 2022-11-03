@@ -236,12 +236,13 @@ TEST(SetTest, function_begin_not_empty) {
   EXPECT_EQ(*i, *j);
 }
 
-TEST(SetTest, function_begin_empty) {
-  TestSet tester;
-  s21::set<int>::iterator i = tester.s21_set_empty.begin();
-  std::set<int>::iterator j = tester.std_set_empty.begin();
-  EXPECT_EQ(*i, *j);
-}
+// TEST(SetTest, function_begin_empty) {  // удалить, валгринд ругается на
+// неинициализированные данные
+//   TestSet tester;
+//   s21::set<int>::iterator i = tester.s21_set_empty.begin();
+//   std::set<int>::iterator j = tester.std_set_empty.begin();
+//   EXPECT_EQ(*i, *j);
+// }
 
 TEST(SetTest, function_const_begin_not_empty) {
   TestSet tester;
@@ -250,12 +251,13 @@ TEST(SetTest, function_const_begin_not_empty) {
   EXPECT_EQ(*i, *j);
 }
 
-TEST(SetTest, function_const_begin_empty) {
-  TestSet tester;
-  s21::set<int>::const_iterator i = tester.s21_set_empty.cbegin();
-  std::set<int>::const_iterator j = tester.std_set_empty.cbegin();
-  EXPECT_EQ(*i, *j);
-}
+// TEST(SetTest, function_const_begin_empty) {  // удалить, валгринд ругается на
+// неинициализированные данные
+//   TestSet tester;
+//   s21::set<int>::const_iterator i = tester.s21_set_empty.cbegin();
+//   std::set<int>::const_iterator j = tester.std_set_empty.cbegin();
+//   EXPECT_EQ(*i, *j);
+// }
 
 TEST(SetTest, function_end_not_empty) {
   TestSet tester;
@@ -266,19 +268,21 @@ TEST(SetTest, function_end_not_empty) {
   EXPECT_EQ(*i, *j);
 }
 
-TEST(SetTest, function_end_empty) {
-  TestSet tester;
-  s21::set<int>::iterator i = tester.s21_set_empty.end();
-  std::set<int>::iterator j = tester.std_set_empty.end();
-  EXPECT_EQ(*i, *j);
-}
+// TEST(SetTest, function_end_empty) {  // удалить, валгринд ругается на
+// неинициализированные данные
+//   TestSet tester;
+//   s21::set<int>::iterator i = tester.s21_set_empty.end();
+//   std::set<int>::iterator j = tester.std_set_empty.end();
+//   EXPECT_EQ(*i, *j);
+// }
 
-TEST(SetTest, function_const_end_empty) {
-  TestSet tester;
-  s21::set<int>::const_iterator i = tester.s21_set_empty.cend();
-  std::set<int>::const_iterator j = tester.std_set_empty.cend();
-  EXPECT_EQ(*i, *j);
-}
+// TEST(SetTest, function_const_end_empty) {  // удалить, валгринд ругается на
+// неинициализированные данные
+//   TestSet tester;
+//   s21::set<int>::const_iterator i = tester.s21_set_empty.cend();
+//   std::set<int>::const_iterator j = tester.std_set_empty.cend();
+//   EXPECT_EQ(*i, *j);
+// }
 
 TEST(SetTest, operator_plus) {
   TestSet tester;
@@ -325,6 +329,7 @@ TEST(SetTest, operation_equal) {
   std::set<int>::iterator it4 = tester.std_set_ten.begin();
   ASSERT_EQ(it1 == it3, it2 == it4);
 }
+
 TEST(SetTest, operation_not_equal) {
   TestSet tester;
   s21::set<int>::iterator iter_1 = tester.s21_set_ten.begin();
@@ -369,7 +374,7 @@ TEST(SetTest, function_erase) {
 
 TEST(SetTest, functions_erase_alot) {
   TestSet tester;
-  
+
   s21::set<int>::iterator it1 = tester.s21_set_ten.find(76);
   std::set<int>::iterator it2 = tester.std_set_ten.find(76);
   tester.s21_set_ten.erase(it1);
@@ -377,7 +382,7 @@ TEST(SetTest, functions_erase_alot) {
   EXPECT_EQ(tester.s21_set_ten.find(76) == tester.s21_set_ten.end(),
           tester.std_set_ten.find(76) == tester.std_set_ten.end());
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
-  
+
   it1 = tester.s21_set_ten.find(123);
   it2 = tester.std_set_ten.find(123);
   tester.s21_set_ten.erase(it1);
@@ -402,4 +407,3 @@ TEST(SetTest, functions_erase_alot) {
           tester.std_set_ten.find(2) == tester.std_set_ten.end());
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 }
-
