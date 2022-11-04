@@ -2,11 +2,12 @@ FLAGS:=-lgtest -lpthread -fprofile-arcs -ftest-coverage
 
 all: test gcov_report
 
-test:
+build:
 	mkdir -p build
 	g++ -g -Wall -Werror -Wextra $(FLAGS) -std=c++17 -Wpedantic \
 	tests/tests.cc -o build/out $(FLAGS)
-	# valgrind --track-origins=yes --show-leak-kinds=all --leak-check=full 
+
+test: build
 	build/./out
 ifeq ($(shell uname), Darwin)
 	mv *gcda build/
@@ -26,5 +27,16 @@ lint:
 clean:
 	rm -rf a.out .clang-format build \
 	*gcda *gcno out
+
+docker:
+	docker build --no-cache .
+
+docker_clean:
+	docker rm $$(docker ps -a -q) || true
+	docker rmi -f $$(docker images -q) || true
+
+valgrind:
+	valgrind --track-origins=yes \
+	--show-leak-kinds=all --leak-check=full build/./out
 
 .SILENT : test clean lint gcov_report
