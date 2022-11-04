@@ -1,4 +1,5 @@
 #include "../s21_set.hpp"
+#include <set>
 
 class TestSet {
  public:

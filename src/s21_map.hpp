@@ -34,14 +34,17 @@ class map : public Tree<std::pair<Key, Value>, CompareMap<Key, Value>> {
   using key_type = Key;
   using mapped_type = Value;
   using value_type = std::pair<key_type, mapped_type>;
-  using node = TreeNode<value_type>;
+  using node = TreeNode<value_type, CompareMap<Key, Value>>;
   using size_type = size_t;
   using reference = value_type&;
   using const_reference = const value_type&;
-  using iterator = TreeIterator<value_type>;
-  using const_iterator = TreeIterator<value_type, 1>;
+  using iterator = TreeIterator<value_type, CompareMap<Key, Value>>;
+  using const_iterator = TreeIterator<value_type, CompareMap<Key, Value>, 1>;
   using Tree<std::pair<Key, Value>, CompareMap<Key, Value>>::Tree;
-  using Tree<std::pair<Key, Value>, CompareMap<Key, Value>>::insert;
+
+  std::pair<iterator, bool> insert(const value_type& value) {
+    return this->insertHelp(value);
+  }
 
     // проверяет, существует ли ключ
   mapped_type& at(const key_type& key) {

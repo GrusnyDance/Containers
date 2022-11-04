@@ -13,6 +13,8 @@ ifeq ($(shell uname), Darwin)
 	mv *gcda build/
 	mv *gcno build/
 endif
+
+rebuild: clean test
 	
 gcov_report: test
 	lcov/bin/./lcov -q -c -d build/. -o build/coverage.info

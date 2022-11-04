@@ -11,13 +11,15 @@
 #include <vector>
 
 namespace s21 {
-template <typename Data>
+template <typename Data, class Compare>
 class TreeNode {
  public:
   Data data_;
   TreeNode* left_;
   TreeNode* right_;
   TreeNode* parent_;
+  using common_compare = Compare;
+
   // конструктор без параметров
   TreeNode() { left_ = right_ = parent_ = nullptr; }
   // конструктор с параметрами
@@ -55,15 +57,16 @@ class TreeNode {
     } else if (temp->parent_) {
       // если значение крайнее правое в левой ветке, следующее по величине
       // значение - корень
-      while (temp->parent_ && temp->parent_->right_ == temp) {
-        // доходим до первого уровня левой ветки (если узел в правой ветке, в
-        // цикл не заходим)
-        temp = temp->parent_;
-      }
+      // while (temp->parent_ && temp->parent_->right_ == temp) {
+      //   // доходим до первого уровня левой ветки (если узел в правой ветке, в
+      //   // цикл не заходим)
+      //   temp = temp->parent_;
+      // }
       temp = temp->parent_;  // поднимаемся на уровень вверх
     }
     return temp;
   }
+  
 
   TreeNode* previousNode() {
     TreeNode* temp = this;
@@ -82,7 +85,12 @@ class TreeNode {
 
   TreeNode* getMin() {
     TreeNode* temp = this;
+    std::cout << "getMin.data_ " << temp->data_ << std::endl;
+    std::cout << "ОШИБКА ГДЕ ТО ТУТ!!!" << std::endl;
+    std::cout << "SEGA (temp->right) " << temp->right_->data_<< std::endl;
+    std::cout << "SEGA (temp->left) " << temp->left_->data_<< std::endl;
     while (temp->left_) {
+      std::cout << "getMin.data_(while) " << temp->data_ << std::endl;
       temp = temp->left_;
     }
     return temp;
@@ -97,17 +105,17 @@ class TreeNode {
   }
 };
 
-template <typename Data, bool isConst = 0>
+template <typename Data, class Compare, bool isConst = 0>
 class TreeIterator {
  public:
   using iterator_category = std::bidirectional_iterator_tag;  // хз зачем
   using value_type = Data;
   using node_pointer =
-      std::conditional_t<isConst, const TreeNode<Data>*, TreeNode<Data>*>;
+      std::conditional_t<isConst, const TreeNode<Data, Compare>*, TreeNode<Data, Compare>*>;
 
   node_pointer ptr_;
   // дружественный класс ноды
-  friend class TreeNode<Data>;
+  friend class TreeNode<Data, Compare>;
 
   TreeIterator() { ptr_ = nullptr; };
   TreeIterator(node_pointer ptr) { ptr_ = ptr; };
@@ -132,6 +140,7 @@ class TreeIterator {
   }
 
   TreeIterator& operator++() {
+    // std::cout << "size is " << ptr_->data_ << std::endl;
     ptr_ = ptr_->nextNode();
     return *this;
   }
@@ -148,24 +157,24 @@ class TreeIterator {
   bool operator!=(const TreeIterator& other) { return (ptr_ != other.ptr_); }
 };
 
-template <typename Data, class Compare>
+template <typename Data, class Compare, bool Multi = false>
 class Tree {
- public:
+ public: 
   using value_type = Data;
-  using node = TreeNode<value_type>;
+  using node = TreeNode<value_type, Compare>;
   using size_type = size_t;
   using reference = value_type&;
   using const_reference = const value_type&;
-  using iterator = TreeIterator<value_type>;
-  using const_iterator = TreeIterator<value_type, 1>;
+  using iterator = TreeIterator<value_type, Compare>;
+  using const_iterator = TreeIterator<value_type, Compare, 1>;
   using common_compare = Compare;
 
  protected:
   node* root_;
   node* fakeNode;  // нода, на которую будет указывать end
   size_type size_ = 0;
-  friend class TreeNode<value_type>;
-  friend class TreeIterator<value_type>;
+  friend class TreeNode<value_type, Compare>;
+  friend class TreeIterator<value_type, Compare>;
 
  public:
   Tree() {
@@ -177,7 +186,7 @@ class Tree {
 
   // инициализация листом
   Tree(std::initializer_list<value_type> const& items) : Tree() {
-    for (auto iter = items.begin(); iter != items.end(); ++iter) insert(*iter);
+    for (auto iter = items.begin(); iter != items.end(); ++iter) insertHelp(*iter);
   }
 
   Tree(const Tree& other) : Tree() {  // копирование
@@ -199,14 +208,6 @@ class Tree {
   }
 
   ~Tree() {  // деструктор
-             // for (auto iter = begin(); iter != end(); ++iter) {
-             //   std::cout << " DO CLEAR:" << *iter << std::endl;
-             // }
-    // std::cout << "ВЫЗВАЛСЯ ДЕСТРУКТОР!!!" << std::endl;
-    // for (auto iter = begin(); iter != end(); ++iter) {
-    //   std::cout << " " << *iter << std::endl;
-    // }
-    // std::cout <<  std::endl;
     clear();
     if (fakeNode) delete fakeNode;
     if (root_) delete root_;
@@ -223,10 +224,16 @@ class Tree {
   }
 
   void operator=(Tree& other) {
+    std::cout << "other size is " << other.size() << std::endl;
+    std::cout << "other root is " << other.root_->data_ << std::endl;
+    std::cout << "other begin() is " << *other.begin() << std::endl;
+
     this->clear();
     for (auto i = other.begin(); i != other.end(); ++i) {
-      this->insert(*i);
+      std::cout << "iter is " << *i << std::endl;
+      this->insertHelp(*i);
     }
+    // std::cout << "size is " << this->size() << std::endl;
   }
 
   // оператор присваивания перемещением
@@ -245,6 +252,8 @@ class Tree {
 
   iterator begin() {
     node* temp = root_->getMin();
+    std::cout << "Begin = " << temp->data_ << std::endl;
+    std::cout << "Begin.getMin() = " << root_->getMin()->data_ << std::endl;
     iterator result(temp);
     return result;
   }
@@ -266,7 +275,8 @@ class Tree {
   size_type size() const { return size_; }  // ok
 
   // bool показывает произошла ли вставка
-  std::pair<iterator, bool> insert(const value_type& value) {
+  std::pair<iterator, bool>  insertHelp(const value_type& value) {
+    // std::cout << value << std::endl;
     if (empty()) {
       root_->data_ = value;
       ++size_;
@@ -274,12 +284,15 @@ class Tree {
       return std::pair<iterator, bool>(res, true);
     } else {
       node* temp;
-      if ((temp = findNode(value, root_)) !=
-          nullptr) {  // TBD два раза проходится по дереву если insert or assign
-        iterator res(temp);
-        return std::pair<iterator, bool>(res, false);
+      if (!Multi) { // 1 yes, 0 no
+        if ((temp = findNode(value, root_)) !=
+            nullptr) {  // TBD два раза проходится по дереву если insert or assign
+          iterator res(temp);
+          return std::pair<iterator, bool>(res, false);
+        }
       }
       temp = new node(value);
+      // std::cout << value << std::endl;
       insertRecursive(root_, 0, temp, 0);
       ++size_;
       iterator res(temp);
@@ -316,7 +329,7 @@ class Tree {
 
   template <typename... Args>
   std::vector<std::pair<iterator, bool>> emplace(Args&&... args) {
-    std::vector<std::pair<iterator, bool>> res = {(insert(args))...};
+    std::vector<std::pair<iterator, bool>> res = {(insertHelp(args))...};
     return res;
   }
 
@@ -379,9 +392,19 @@ class Tree {
           parent->left_ = val;
         }
       }
+    // } else if (common_compare(val->data_) == root->data_) {
+    //   if (root->left_) {
+    //     root->left_->parent_ = val;
+    //     val->parent_ = root;
+    //     val->left_ = root->left_;
+    //     root->left_ = val;
+    //   } else {
+    //     root->left_ = val;
+    //     val->parent_ = root;
+    //   }
     } else if (common_compare(val->data_) > root->data_) {
       insertRecursive(root->right_, root, val, 1);
-    } else {
+    } else if (common_compare(val->data_) < root->data_) {
       insertRecursive(root->left_, root, val, 0);
     }
   }
