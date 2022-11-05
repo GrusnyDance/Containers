@@ -55,18 +55,20 @@ class TreeNode {
       temp = temp->right_;
       while (temp->left_) temp = temp->left_;
     } else if (temp->parent_) {
+      if (common_compare(temp->data_) == temp->parent_->data_) {
+        return temp->parent_;
+      }
       // если значение крайнее правое в левой ветке, следующее по величине
       // значение - корень
-      // while (temp->parent_ && temp->parent_->right_ == temp) {
-      //   // доходим до первого уровня левой ветки (если узел в правой ветке, в
-      //   // цикл не заходим)
-      //   temp = temp->parent_;
-      // }
+      while (temp->parent_ && temp->parent_->right_ == temp) {
+        // доходим до первого уровня левой ветки (если узел в правой ветке, в
+        // цикл не заходим)
+        temp = temp->parent_;
+      }
       temp = temp->parent_;  // поднимаемся на уровень вверх
     }
     return temp;
   }
-  
 
   TreeNode* previousNode() {
     TreeNode* temp = this;
@@ -85,12 +87,7 @@ class TreeNode {
 
   TreeNode* getMin() {
     TreeNode* temp = this;
-    std::cout << "getMin.data_ " << temp->data_ << std::endl;
-    std::cout << "ОШИБКА ГДЕ ТО ТУТ!!!" << std::endl;
-    std::cout << "SEGA (temp->right) " << temp->right_->data_<< std::endl;
-    std::cout << "SEGA (temp->left) " << temp->left_->data_<< std::endl;
     while (temp->left_) {
-      std::cout << "getMin.data_(while) " << temp->data_ << std::endl;
       temp = temp->left_;
     }
     return temp;
@@ -111,7 +108,8 @@ class TreeIterator {
   using iterator_category = std::bidirectional_iterator_tag;  // хз зачем
   using value_type = Data;
   using node_pointer =
-      std::conditional_t<isConst, const TreeNode<Data, Compare>*, TreeNode<Data, Compare>*>;
+      std::conditional_t<isConst, const TreeNode<Data, Compare>*,
+                         TreeNode<Data, Compare>*>;
 
   node_pointer ptr_;
   // дружественный класс ноды
@@ -159,7 +157,7 @@ class TreeIterator {
 
 template <typename Data, class Compare, bool Multi = false>
 class Tree {
- public: 
+ public:
   using value_type = Data;
   using node = TreeNode<value_type, Compare>;
   using size_type = size_t;
@@ -186,7 +184,8 @@ class Tree {
 
   // инициализация листом
   Tree(std::initializer_list<value_type> const& items) : Tree() {
-    for (auto iter = items.begin(); iter != items.end(); ++iter) insertHelp(*iter);
+    for (auto iter = items.begin(); iter != items.end(); ++iter)
+      insertHelp(*iter);
   }
 
   Tree(const Tree& other) : Tree() {  // копирование
@@ -224,16 +223,10 @@ class Tree {
   }
 
   void operator=(Tree& other) {
-    std::cout << "other size is " << other.size() << std::endl;
-    std::cout << "other root is " << other.root_->data_ << std::endl;
-    std::cout << "other begin() is " << *other.begin() << std::endl;
-
     this->clear();
     for (auto i = other.begin(); i != other.end(); ++i) {
-      std::cout << "iter is " << *i << std::endl;
       this->insertHelp(*i);
     }
-    // std::cout << "size is " << this->size() << std::endl;
   }
 
   // оператор присваивания перемещением
@@ -252,8 +245,6 @@ class Tree {
 
   iterator begin() {
     node* temp = root_->getMin();
-    std::cout << "Begin = " << temp->data_ << std::endl;
-    std::cout << "Begin.getMin() = " << root_->getMin()->data_ << std::endl;
     iterator result(temp);
     return result;
   }
@@ -275,7 +266,7 @@ class Tree {
   size_type size() const { return size_; }  // ok
 
   // bool показывает произошла ли вставка
-  std::pair<iterator, bool>  insertHelp(const value_type& value) {
+  std::pair<iterator, bool> insertHelp(const value_type& value) {
     // std::cout << value << std::endl;
     if (empty()) {
       root_->data_ = value;
@@ -284,15 +275,15 @@ class Tree {
       return std::pair<iterator, bool>(res, true);
     } else {
       node* temp;
-      if (!Multi) { // 1 yes, 0 no
+      if (!Multi) {  // 1 yes, 0 no
         if ((temp = findNode(value, root_)) !=
-            nullptr) {  // TBD два раза проходится по дереву если insert or assign
+            nullptr) {  // TBD два раза проходится по дереву если insert or
+                        // assign
           iterator res(temp);
           return std::pair<iterator, bool>(res, false);
         }
       }
       temp = new node(value);
-      // std::cout << value << std::endl;
       insertRecursive(root_, 0, temp, 0);
       ++size_;
       iterator res(temp);
@@ -392,16 +383,16 @@ class Tree {
           parent->left_ = val;
         }
       }
-    // } else if (common_compare(val->data_) == root->data_) {
-    //   if (root->left_) {
-    //     root->left_->parent_ = val;
-    //     val->parent_ = root;
-    //     val->left_ = root->left_;
-    //     root->left_ = val;
-    //   } else {
-    //     root->left_ = val;
-    //     val->parent_ = root;
-    //   }
+    } else if (common_compare(val->data_) == root->data_) {
+      if (root->left_) {
+        root->left_->parent_ = val;
+        val->parent_ = root;
+        val->left_ = root->left_;
+        root->left_ = val;
+      } else {
+        root->left_ = val;
+        val->parent_ = root;
+      }
     } else if (common_compare(val->data_) > root->data_) {
       insertRecursive(root->right_, root, val, 1);
     } else if (common_compare(val->data_) < root->data_) {
@@ -499,8 +490,10 @@ class Tree {
     } else {
       node* temp;
       // если узел с таким ключом уже есть
-      if ((temp = findNode(value, root_)) != nullptr) {
-        return;
+      if (!Multi) {
+        if ((temp = findNode(value, root_)) != nullptr) {
+          return;
+        }
       }
       temp = new node(value);
       insertRecursive(root_, 0, temp, 0);
