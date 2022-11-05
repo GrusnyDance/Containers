@@ -28,11 +28,14 @@ class multiset : public Tree<K, CompareMulti<K>, true> {
   using reference = K&;
   using const_reference = const K&;
   using size_type = size_t;
-  using node = TreeNode<K, CompareMulti<K>>;
   using iterator = TreeIterator<K, CompareMulti<K>>;
   using const_iterator = TreeIterator<K, CompareMulti<K>, 1>;
   using Tree<K, CompareMulti<K>, true>::Tree;
 
+ private:
+  using node = TreeNode<K, CompareMulti<K>>;
+
+ public:
   iterator insert(const value_type& value) {
     return this->insertHelp(value).first;
   }
@@ -50,6 +53,53 @@ class multiset : public Tree<K, CompareMulti<K>, true> {
   size_type max_size() const {
     std::allocator<key_type> alloc;
     return alloc.max_size() / 10;
+  }
+
+  // returns the number of elements matching specific key
+  size_type count(const key_type& key) {
+    size_type locCount = 0;
+    iterator tmp;
+    if ((tmp = find(key)) == this->end()) {
+      return 0;
+    } else {
+      locCount++;
+      node* next = tmp.getPtr();
+      while (next->left_ && next->data_ == next->left_->data_) {
+        next = next->left_;
+        locCount++;
+      }
+    }
+    return locCount;
+  }
+
+  // returns range of elements matching a specific key
+  std::pair<iterator, iterator> equal_range(const key_type& key) {
+    iterator lower = lower_bound(key);
+    iterator upper = upper_bound(key);
+
+    std::pair<iterator, iterator> a(lower, upper);
+    return a;
+  }
+
+  // returns an iterator to the first element not less than the given key
+  iterator lower_bound(const key_type& key) {
+    if (!this->size_) return this->end();
+    iterator res = this->begin();
+
+    for (; (*res < key) && res != this->end(); ++res) {
+      ;
+    }
+    return res;
+  }
+
+  // returns an iterator to the first element greater than the given key
+  iterator upper_bound(const key_type& key) {
+    iterator temp = lower_bound(key);
+    if (temp == this->end() || (temp.getPtr())->data_ > key) return temp;
+
+    ++temp;
+    if (temp.getPtr() == this->fakeNode) return this->end();
+    return temp;
   }
 };
 

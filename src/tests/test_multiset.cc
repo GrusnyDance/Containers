@@ -382,3 +382,30 @@ TEST(MultisetTest, functions_erase_alot) {
             tester.std_set_ten.find(2) == tester.std_set_ten.end());
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 }
+
+TEST(MultisetTest, count) {
+  TestMultiset tester;
+  ASSERT_EQ(tester.s21_set_ten.count(1), tester.std_set_ten.count(1));
+}
+
+TEST(MultisetTest, lower_bound_equals) {
+  TestMultiset tester;
+  s21::multiset<int>::iterator i = tester.s21_set_ten.lower_bound(1);
+  std::multiset<int>::iterator j = tester.std_set_ten.lower_bound(1);
+  ASSERT_EQ(*i, *j);
+}
+
+TEST(MultisetTest, lower_bound_not_less) {
+  TestMultiset tester;
+  s21::multiset<int>::iterator i = tester.s21_set_ten.lower_bound(50);
+  std::multiset<int>::iterator j = tester.std_set_ten.lower_bound(50);
+  ASSERT_EQ(*i, *j);
+}
+
+TEST(MultisetTest, upper_bound) {
+  TestMultiset tester;
+  s21::multiset<int>::iterator i = tester.s21_set_ten.upper_bound(70);
+  std::multiset<int>::iterator j = tester.std_set_ten.upper_bound(70);
+  ASSERT_EQ(*i, *j);
+}
+
