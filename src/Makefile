@@ -13,8 +13,6 @@ ifeq ($(shell uname), Darwin)
 	mv *gcda build/
 	mv *gcno build/
 endif
-
-rebuild: clean test
 	
 gcov_report: test
 	lcov/bin/./lcov -q -c -d build/. -o build/coverage.info
@@ -40,5 +38,7 @@ docker_clean:
 valgrind:
 	valgrind --track-origins=yes \
 	--show-leak-kinds=all --leak-check=full build/./out
+
+rebuild: clean test
 
 .SILENT : test clean lint gcov_report

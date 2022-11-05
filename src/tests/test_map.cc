@@ -63,7 +63,7 @@ class MapTest : public testing::Test {
 
 TEST_F(MapTest, clear_test) {
   s21::map<int, string> a;
-  s21::map<int, string> b = {j,k,l,m};
+  s21::map<int, string> b = {j, k, l, m};
   a.clear();
   b.clear();
 }
@@ -75,7 +75,6 @@ TEST_F(MapTest, InitializationList) {
   map<int, string> a = {j, k, l, m};
   ASSERT_EQ(a.size(), b.size());
 }
-
 
 TEST_F(MapTest, Copy) {
   s21::map<int, string> b(myMap1);
@@ -146,5 +145,3 @@ TEST_F(MapTest, MergeAndContains) {
 }
 
 }  // namespace MapSpace
-
-

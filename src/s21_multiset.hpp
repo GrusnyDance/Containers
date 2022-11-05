@@ -24,9 +24,9 @@ template <class K>
 class multiset : public Tree<K, CompareMulti<K>, true> {
  public:
   using key_type = K;
-  using value_type = K; 
-  using reference = K &;
-  using const_reference = const K &;
+  using value_type = K;
+  using reference = K&;
+  using const_reference = const K&;
   using size_type = size_t;
   using node = TreeNode<K, CompareMulti<K>>;
   using iterator = TreeIterator<K, CompareMulti<K>>;

@@ -30,7 +30,7 @@ struct CompareMap {
 
 template <typename Key, typename Value>
 class map : public Tree<std::pair<Key, Value>, CompareMap<Key, Value>> {
-  public:
+ public:
   using key_type = Key;
   using mapped_type = Value;
   using value_type = std::pair<key_type, mapped_type>;
@@ -46,12 +46,10 @@ class map : public Tree<std::pair<Key, Value>, CompareMap<Key, Value>> {
     return this->insertHelp(value);
   }
 
-    // проверяет, существует ли ключ
+  // проверяет, существует ли ключ
   mapped_type& at(const key_type& key) {
     value_type a = value_type(key, Value());
-    node* res = this->findNode(
-        a,
-        this->root_);  // не сработает без передачи вызывающего объекта тк рекурсия?
+    node* res = this->findNode(a, this->root_);
     if (!res) {
       throw std::out_of_range("There is no such key");
     }
@@ -62,14 +60,14 @@ class map : public Tree<std::pair<Key, Value>, CompareMap<Key, Value>> {
   mapped_type& operator[](const key_type& key) {
     try {
       return at(key);
-    } catch (...) {   // любое исключение
+    } catch (...) {  // любое исключение
       value_type a = value_type(key, mapped_type());
       insert(a);
       return at(key);
     }
   }
 
-  size_type max_size() const {              // it works i have no idea how
+  size_type max_size() const {  // it works i have no idea how
     return std::numeric_limits<size_type>::max() /
            (sizeof(value_type) + 3 * sizeof(node*) + 8 * sizeof(bool)) / 2;
   }
@@ -93,12 +91,12 @@ class map : public Tree<std::pair<Key, Value>, CompareMap<Key, Value>> {
     }
   }
 
-    bool contains(const key_type& key) {
-    std::pair<key_type, value_type> a = std::pair<key_type, value_type>(key, value_type());
+  bool contains(const key_type& key) {
+    std::pair<key_type, value_type> a =
+        std::pair<key_type, value_type>(key, value_type());
     node* res = this->findNode(a, this->root_);
     return (res) ? 1 : 0;
   }
-
 };
 
 }  // namespace s21

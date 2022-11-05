@@ -1,8 +1,6 @@
 #ifndef _SRC_S21_SET_HPP_
 #define _SRC_S21_SET_HPP_
 
-#include "s21_tree.hpp"
-
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -11,6 +9,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "s21_tree.hpp"
 
 namespace s21 {
 
@@ -33,8 +33,8 @@ class set : public Tree<K, CompareSet<K>> {
  public:
   using key_type = K;
   using value_type = K;
-  using reference = K &;
-  using const_reference = const K &;
+  using reference = K&;
+  using const_reference = const K&;
   using size_type = size_t;
   using node = TreeNode<K, CompareSet<K>>;
   using iterator = TreeIterator<K, CompareSet<K>>;
@@ -60,7 +60,6 @@ class set : public Tree<K, CompareSet<K>> {
   std::pair<iterator, bool> insert(const value_type& value) {
     return this->insertHelp(value);
   }
-
 
   bool contains(const key_type& key) {
     node* res = findNode(key, this->root_);

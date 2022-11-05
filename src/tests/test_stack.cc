@@ -141,4 +141,3 @@ TEST(StackTest, emplace) {
     i--;
   }
 }
-

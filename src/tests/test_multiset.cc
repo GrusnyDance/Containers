@@ -318,10 +318,8 @@ TEST(MultisetTest, operation_not_equal) {
 
 TEST(MultisetTest, function_insert) {
   TestMultiset tester;
-  s21::multiset<int>::iterator iter_1 =
-      tester.s21_set_ten.insert(45);
-  std::multiset<int>::iterator iter_2 =
-      tester.std_set_ten.insert(45);
+  s21::multiset<int>::iterator iter_1 = tester.s21_set_ten.insert(45);
+  std::multiset<int>::iterator iter_2 = tester.std_set_ten.insert(45);
   EXPECT_EQ(*iter_1, *iter_2);
 }
 

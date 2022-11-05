@@ -269,9 +269,7 @@ TEST(VectorTest, FrontBack2) {
   ASSERT_EQ(a.back(), -555);
 }
 
-TEST(VectorTest, data) {
-  s21::vector<int> a{213, 4, 432, 42, 4, 2341};
-}
+TEST(VectorTest, data) { s21::vector<int> a{213, 4, 432, 42, 4, 2341}; }
 
 TEST(VectorTest, reserve_shrink_to_fit) {
   s21::vector<int> a{1, 2, 3, 4, 5, 6};
@@ -316,8 +314,8 @@ TEST(VectorTest, erase) {
 }
 
 TEST(VectorTest, Emplace) {
-  s21::vector<int>a;
-  std::vector<int>b;
+  s21::vector<int> a;
+  std::vector<int> b;
 
   a.emplace_back(1);
   a.emplace_back(2);

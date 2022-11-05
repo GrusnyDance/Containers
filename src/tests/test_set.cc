@@ -1,5 +1,6 @@
-#include "../s21_set.hpp"
 #include <set>
+
+#include "../s21_set.hpp"
 
 class TestSet {
  public:
@@ -302,8 +303,7 @@ TEST(SetTest, operator_minus) {
   TestSet tester;
   s21::set<int>::iterator i = tester.s21_set_ten.end();
   std::set<int>::iterator j = tester.std_set_ten.end();
-  while (i != tester.s21_set_ten.begin() && j != tester.std_set_ten.begin())
-  {
+  while (i != tester.s21_set_ten.begin() && j != tester.std_set_ten.begin()) {
     --i;
     --j;
     EXPECT_EQ(*i, *j);
@@ -381,7 +381,7 @@ TEST(SetTest, functions_erase_alot) {
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
   EXPECT_EQ(tester.s21_set_ten.find(76) == tester.s21_set_ten.end(),
-          tester.std_set_ten.find(76) == tester.std_set_ten.end());
+            tester.std_set_ten.find(76) == tester.std_set_ten.end());
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 
   it1 = tester.s21_set_ten.find(123);
@@ -389,7 +389,7 @@ TEST(SetTest, functions_erase_alot) {
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
   EXPECT_EQ(tester.s21_set_ten.find(123) == tester.s21_set_ten.end(),
-          tester.std_set_ten.find(123) == tester.std_set_ten.end());
+            tester.std_set_ten.find(123) == tester.std_set_ten.end());
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 
   it1 = tester.s21_set_ten.find(43);
@@ -397,7 +397,7 @@ TEST(SetTest, functions_erase_alot) {
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
   EXPECT_EQ(tester.s21_set_ten.find(43) == tester.s21_set_ten.end(),
-          tester.std_set_ten.find(43) == tester.std_set_ten.end());
+            tester.std_set_ten.find(43) == tester.std_set_ten.end());
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 
   it1 = tester.s21_set_ten.find(2);
@@ -405,6 +405,6 @@ TEST(SetTest, functions_erase_alot) {
   tester.s21_set_ten.erase(it1);
   tester.std_set_ten.erase(it2);
   EXPECT_EQ(tester.s21_set_ten.find(2) == tester.s21_set_ten.end(),
-          tester.std_set_ten.find(2) == tester.std_set_ten.end());
+            tester.std_set_ten.find(2) == tester.std_set_ten.end());
   ASSERT_EQ(tester.s21_set_ten.size(), tester.std_set_ten.size());
 }
