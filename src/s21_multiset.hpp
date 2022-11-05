@@ -21,9 +21,6 @@ struct CompareMulti {
 };
 
 template <class K>
-class set;  //  зачем
-
-template <class K>
 class multiset : public Tree<K, CompareMulti<K>, true> {
  public:
   using key_type = K;
@@ -35,7 +32,6 @@ class multiset : public Tree<K, CompareMulti<K>, true> {
   using iterator = TreeIterator<K, CompareMulti<K>>;
   using const_iterator = TreeIterator<K, CompareMulti<K>, 1>;
   using Tree<K, CompareMulti<K>, true>::Tree;
-  // using Tree<K, CompareMulti<K>, true>::insertHelp;
 
   iterator insert(const value_type& value) {
     return this->insertHelp(value).first;
