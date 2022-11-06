@@ -39,7 +39,7 @@ class map : public Tree<std::pair<Key, Value>, CompareMap<Key, Value>> {
   using reference = value_type&;
   using const_reference = const value_type&;
   using iterator = TreeIterator<value_type, CompareMap<Key, Value>>;
-  using const_iterator = TreeIterator<value_type, CompareMap<Key, Value>, 1>;
+  using const_iterator = ConstTreeIterator<value_type, CompareMap<Key, Value>>;
   using Tree<std::pair<Key, Value>, CompareMap<Key, Value>>::Tree;
 
   std::pair<iterator, bool> insert(const value_type& value) {
@@ -47,7 +47,7 @@ class map : public Tree<std::pair<Key, Value>, CompareMap<Key, Value>> {
   }
 
   // проверяет, существует ли ключ
-  mapped_type& at(const key_type& key) {
+  mapped_type& at(const key_type& key) const {
     value_type a = value_type(key, Value());
     node* res = this->findNode(a, this->root_);
     if (!res) {
@@ -91,7 +91,7 @@ class map : public Tree<std::pair<Key, Value>, CompareMap<Key, Value>> {
     }
   }
 
-  bool contains(const key_type& key) {
+  bool contains(const key_type& key) const {
     std::pair<key_type, value_type> a =
         std::pair<key_type, value_type>(key, value_type());
     node* res = this->findNode(a, this->root_);

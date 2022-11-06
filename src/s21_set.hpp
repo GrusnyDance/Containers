@@ -38,7 +38,7 @@ class set : public Tree<K, CompareSet<K>> {
   using size_type = size_t;
   using node = TreeNode<K, CompareSet<K>>;
   using iterator = TreeIterator<K, CompareSet<K>>;
-  using const_iterator = TreeIterator<K, CompareSet<K>, 1>;
+  using const_iterator = ConstTreeIterator<K, CompareSet<K>>;
   using set_compare = CompareSet<key_type>;
   using Tree<K, CompareSet<K>>::Tree;
 
@@ -47,13 +47,13 @@ class set : public Tree<K, CompareSet<K>> {
     return alloc.max_size() / 10;
   }
 
-  iterator find(const key_type& key) {
+  iterator find(const key_type& key) const {
     node* tmp = this->findNode(key, this->root_);
     if (tmp) {
       iterator it = tmp;
-      return it;
+      return (const_iterator)it;
     } else {
-      return this->end();
+      return this->cend();
     }
   }
 
@@ -61,7 +61,7 @@ class set : public Tree<K, CompareSet<K>> {
     return this->insertHelp(value);
   }
 
-  bool contains(const key_type& key) {
+  bool contains(const key_type& key) const {
     node* res = findNode(key, this->root_);
     return (res) ? 1 : 0;
   }

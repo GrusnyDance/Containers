@@ -6,7 +6,6 @@
 #include <iostream>  // DEBUG
 #include <limits>    // max_size
 #include <string>
-#include <type_traits>
 #include <utility>  // initializer list, pair
 #include <vector>
 
@@ -102,25 +101,33 @@ class TreeNode {
   }
 };
 
-template <typename Data, class Compare, bool isConst = 0>
+template <typename Data, class Compare>
+class ConstTreeIterator;
+
+template <typename Data, class Compare>
 class TreeIterator {
  public:
   using iterator_category = std::bidirectional_iterator_tag;  // хз зачем
   using value_type = Data;
-  using node_pointer =
-      std::conditional_t<isConst, const TreeNode<Data, Compare>*,
-                         TreeNode<Data, Compare>*>;
+  using node_pointer = TreeNode<Data, Compare>*;
 
   node_pointer ptr_;
   // дружественный класс ноды
   friend class TreeNode<Data, Compare>;
+  friend class ConstTreeIterator<Data, Compare>;
 
   TreeIterator() { ptr_ = nullptr; };
   TreeIterator(node_pointer ptr) { ptr_ = ptr; };
   TreeIterator(const TreeIterator& other) { *this = other; }
+  TreeIterator(const ConstTreeIterator<Data, Compare>& other) { *this = other; }
   ~TreeIterator() {}
 
   TreeIterator& operator=(const TreeIterator& other) {
+    ptr_ = other.ptr_;
+    return *this;
+  }
+
+  TreeIterator& operator=(const ConstTreeIterator<Data, Compare>& other) {
     ptr_ = other.ptr_;
     return *this;
   }
@@ -138,7 +145,6 @@ class TreeIterator {
   }
 
   TreeIterator& operator++() {
-    // std::cout << "size is " << ptr_->data_ << std::endl;
     ptr_ = ptr_->nextNode();
     return *this;
   }
@@ -155,6 +161,68 @@ class TreeIterator {
   bool operator!=(const TreeIterator& other) { return (ptr_ != other.ptr_); }
 };
 
+template <typename Data, class Compare>
+class ConstTreeIterator {
+ public:
+  using iterator_category = std::bidirectional_iterator_tag;  // хз зачем
+  using value_type = const Data;
+  using node_pointer = TreeNode<Data, Compare>*;
+  friend class TreeIterator<Data, Compare>;
+
+  node_pointer ptr_;
+  // дружественный класс ноды
+  friend class TreeNode<Data, Compare>;
+
+  ConstTreeIterator() { ptr_ = nullptr; };
+  ConstTreeIterator(node_pointer ptr) { ptr_ = ptr; };
+  ConstTreeIterator(const TreeIterator<Data, Compare>& other) { *this = other; }
+  ConstTreeIterator(const ConstTreeIterator& other) { *this = other; }
+  ~ConstTreeIterator() {}
+
+  ConstTreeIterator& operator=(const ConstTreeIterator& other) {
+    ptr_ = other.ptr_;
+    return *this;
+  }
+
+  ConstTreeIterator& operator=(const TreeIterator<Data, Compare>& other) {
+    ptr_ = other.ptr_;
+    return *this;
+  }
+
+  ConstTreeIterator operator++(int) {
+    ConstTreeIterator before(*this);
+    ++(*this);
+    return before;
+  }
+
+  ConstTreeIterator operator--(int) {
+    ConstTreeIterator before(*this);
+    --(*this);
+    return before;
+  }
+
+  ConstTreeIterator& operator++() {
+    // std::cout << "size is " << ptr_->data_ << std::endl;
+    ptr_ = ptr_->nextNode();
+    return *this;
+  }
+
+  ConstTreeIterator& operator--() {
+    ptr_ = ptr_->previousNode();
+    return *this;
+  }
+
+  node_pointer getPtr() { return ptr_; };
+  node_pointer operator->() { return (ptr_); }
+  const value_type& operator*() { return (ptr_->data_); }
+  bool operator==(const ConstTreeIterator& other) {
+    return (ptr_ == other.ptr_);
+  }
+  bool operator!=(const ConstTreeIterator& other) {
+    return (ptr_ != other.ptr_);
+  }
+};
+
 template <typename Data, class Compare, bool Multi = false>
 class Tree {
  public:
@@ -164,7 +232,7 @@ class Tree {
   using reference = value_type&;
   using const_reference = const value_type&;
   using iterator = TreeIterator<value_type, Compare>;
-  using const_iterator = TreeIterator<value_type, Compare, 1>;
+  using const_iterator = ConstTreeIterator<value_type, Compare>;
   using common_compare = Compare;
 
  protected:
@@ -358,7 +426,7 @@ class Tree {
     }
   }
 
-  node* findNode(const value_type& key, node* root) {
+  node* findNode(const value_type& key, node* root) const {
     if (size_ == 0 || root == 0 || root == fakeNode) {
       return nullptr;
     }

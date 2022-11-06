@@ -29,7 +29,7 @@ class multiset : public Tree<K, CompareMulti<K>, true> {
   using const_reference = const K&;
   using size_type = size_t;
   using iterator = TreeIterator<K, CompareMulti<K>>;
-  using const_iterator = TreeIterator<K, CompareMulti<K>, 1>;
+  using const_iterator = ConstTreeIterator<K, CompareMulti<K>>;
   using Tree<K, CompareMulti<K>, true>::Tree;
 
  private:
@@ -40,13 +40,13 @@ class multiset : public Tree<K, CompareMulti<K>, true> {
     return this->insertHelp(value).first;
   }
 
-  iterator find(const key_type& key) {
+  iterator find(const key_type& key) const {
     node* tmp = this->findNode(key, this->root_);
     if (tmp) {
       iterator it = tmp;
-      return it;
+      return (const_iterator)it;
     } else {
-      return this->end();
+      return this->cend();
     }
   }
 
@@ -56,10 +56,10 @@ class multiset : public Tree<K, CompareMulti<K>, true> {
   }
 
   // returns the number of elements matching specific key
-  size_type count(const key_type& key) {
+  size_type count(const key_type& key) const {
     size_type locCount = 0;
     iterator tmp;
-    if ((tmp = find(key)) == this->end()) {
+    if ((tmp = find(key)) == this->cend()) {
       return 0;
     } else {
       locCount++;
@@ -73,7 +73,7 @@ class multiset : public Tree<K, CompareMulti<K>, true> {
   }
 
   // returns range of elements matching a specific key
-  std::pair<iterator, iterator> equal_range(const key_type& key) {
+  std::pair<iterator, iterator> equal_range(const key_type& key) const {
     iterator lower = lower_bound(key);
     iterator upper = upper_bound(key);
 
@@ -82,23 +82,23 @@ class multiset : public Tree<K, CompareMulti<K>, true> {
   }
 
   // returns an iterator to the first element not less than the given key
-  iterator lower_bound(const key_type& key) {
-    if (!this->size_) return this->end();
-    iterator res = this->begin();
+  iterator lower_bound(const key_type& key) const {
+    if (!this->size_) return this->cend();
+    iterator res = this->cbegin();
 
-    for (; (*res < key) && res != this->end(); ++res) {
+    for (; (*res < key) && res != this->cend(); ++res) {
       ;
     }
     return res;
   }
 
   // returns an iterator to the first element greater than the given key
-  iterator upper_bound(const key_type& key) {
+  iterator upper_bound(const key_type& key) const {
     iterator temp = lower_bound(key);
-    if (temp == this->end() || (temp.getPtr())->data_ > key) return temp;
+    if (temp == this->cend() || (temp.getPtr())->data_ > key) return temp;
 
     ++temp;
-    if (temp.getPtr() == this->fakeNode) return this->end();
+    if (temp.getPtr() == this->fakeNode) return this->cend();
     return temp;
   }
 };
